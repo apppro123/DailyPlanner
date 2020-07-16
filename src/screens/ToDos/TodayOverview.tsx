@@ -1,0 +1,128 @@
+import React from 'react';
+//own components
+import { OwnView, OverviewList, ToDoItem } from 'components';
+//navigation
+import { CompositeNavigationProp } from "@react-navigation/native";
+import { MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { BottomTabNTypes, ToDosOverviewMaterialTopTabNTypes } from "../types";
+//redux
+import { connect } from 'react-redux';
+import {
+  refreshTodayList,
+  refreshFutureList,
+} from '../../redux/actions';
+//db
+import { updateOnlyDone, deleteToDo, updateOnlyDayIndex } from 'db_realm';
+//interfaces and types
+import { ToDoI } from "res";
+import { RootStateType } from 'src/redux/reducers';
+//styles
+import { globalStyles } from '../style';
+
+//typescript for redux
+const mapStateToProps = (state: RootStateType) => {
+  return {
+    ToDos: state.toDos,
+  };
+};
+const mapDispatchToProps = {
+  refreshTodayList,
+  refreshFutureList
+}
+type PropsFromRedux = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
+
+//navigation props
+type TodayOverviewNavigationProps = CompositeNavigationProp<MaterialTopTabNavigationProp<ToDosOverviewMaterialTopTabNTypes, "Today">,
+  BottomTabNavigationProp<BottomTabNTypes>>;
+
+interface PropsI extends PropsFromRedux{
+  navigation: TodayOverviewNavigationProps,
+}
+
+class TodayOverview extends React.Component<PropsI> {
+  renderTodayToDo = ({ item, index }: { item: ToDoI, index: number }) => {
+    let checked = false;
+    const daysDone = Object.values(item.daysDone);
+    if (daysDone.length > 1) {
+      let indexOfToday = daysDone.findIndex(
+        dayDone => dayDone.dayIndex === 1,
+      );
+      checked = daysDone[indexOfToday].done;
+    } else if (daysDone.length === 1) {
+      checked = daysDone[0].done;
+    }
+    return (
+      <ToDoItem<TodayOverviewNavigationProps>
+        checked={checked}
+        item={item}
+        index={index} //index of item in the array
+        onCheckSwitch={this.onCheckSwitch}
+        deleteToDo={this.deleteToDo}
+        postponeItem={this.postponeItem}
+        navigation={this.props.navigation}
+      />
+    );
+  };
+
+  //methods for list
+  onCheckSwitch = async (newDone: boolean, id: string, index: number /*index of item in the list*/) => {
+    const { refreshTodayList, ToDos } = this.props;
+    //update realm
+    await updateOnlyDone(newDone, id, 1);
+    //update redux
+    let { todayToDos } = ToDos;
+    let item = todayToDos[index] as ToDoI;
+    //get array
+    const daysDone = item.daysDone;
+    if (daysDone.length > 1) {
+      //daily
+      let indexOfToday = daysDone.findIndex(
+        dayDone => dayDone.dayIndex === 1,
+      );
+      daysDone[indexOfToday].done = newDone;
+    } else {
+      //just on specific day
+      daysDone[0].done = newDone;
+    }
+    refreshTodayList();
+  };
+
+  deleteToDo = async (id: string, indexInList: number) => {
+    //delete in db
+    await deleteToDo(id);
+    //delete in redux
+    const { todayToDos } = this.props.ToDos;
+    todayToDos.splice(indexInList, 1);
+    this.props.refreshTodayList();
+  };
+
+  postponeItem = async (indexInList: number, item: ToDoI) => {
+    //change in db
+    updateOnlyDayIndex(item.id, 2)
+    //change in redux
+    const { todayToDos, futureToDos } = this.props.ToDos;
+    //delete from todays list
+    todayToDos.splice(indexInList, 1);
+    this.props.refreshTodayList();
+    //change dayIndex and add to tomorrows list
+    item.daysDone[0].dayIndex = 2;
+    futureToDos.push(item);
+    this.props.refreshFutureList();
+  };
+
+  render() {
+    const { refreshTodayList, todayToDos } = this.props.ToDos;
+    return (
+      <OwnView style={globalStyles.screenContainer}>
+        <OverviewList
+          data={todayToDos}
+          renderItem={this.renderTodayToDo}
+          extraData={refreshTodayList}
+        />
+      </OwnView>
+    );
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TodayOverview);
