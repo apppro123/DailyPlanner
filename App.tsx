@@ -95,7 +95,7 @@ class App extends React.Component<{}, StateI> {
   render() {
     return (
       <Provider store={store}>
-        {this.state.calculationsMade ? <Main /> : <View />}
+        {<Main />}
       </Provider>
     );
   }

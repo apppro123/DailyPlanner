@@ -1,4 +1,5 @@
 import React from 'react';
+import Moment from "moment";
 //own components
 import { OwnView, OverviewList, ToDoItem } from 'components';
 //navigation
@@ -13,7 +14,7 @@ import {
   refreshFutureList,
 } from '../../redux/actions';
 //db
-import { updateOnlyDone, deleteToDo, updateOnlyDayIndex } from 'db_realm';
+import { updateOnlyDone, deleteToDo, updateOnlyDateTime } from 'db_realm';
 //interfaces and types
 import { ToDoI } from "res";
 import { RootStateType } from 'src/redux/reducers';
@@ -36,25 +37,14 @@ type PropsFromRedux = ReturnType<typeof mapStateToProps> & typeof mapDispatchToP
 type TodayOverviewNavigationProps = CompositeNavigationProp<MaterialTopTabNavigationProp<ToDosOverviewMaterialTopTabNTypes, "Today">,
   BottomTabNavigationProp<BottomTabNTypes>>;
 
-interface PropsI extends PropsFromRedux{
+interface PropsI extends PropsFromRedux {
   navigation: TodayOverviewNavigationProps,
 }
 
 class TodayOverview extends React.Component<PropsI> {
   renderTodayToDo = ({ item, index }: { item: ToDoI, index: number }) => {
-    let checked = false;
-    const daysDone = Object.values(item.daysDone);
-    if (daysDone.length > 1) {
-      let indexOfToday = daysDone.findIndex(
-        dayDone => dayDone.dayIndex === 1,
-      );
-      checked = daysDone[indexOfToday].done;
-    } else if (daysDone.length === 1) {
-      checked = daysDone[0].done;
-    }
     return (
       <ToDoItem<TodayOverviewNavigationProps>
-        checked={checked}
         item={item}
         index={index} //index of item in the array
         onCheckSwitch={this.onCheckSwitch}
@@ -69,22 +59,11 @@ class TodayOverview extends React.Component<PropsI> {
   onCheckSwitch = async (newDone: boolean, id: string, index: number /*index of item in the list*/) => {
     const { refreshTodayList, ToDos } = this.props;
     //update realm
-    await updateOnlyDone(newDone, id, 1);
+    await updateOnlyDone(newDone, id);
     //update redux
     let { todayToDos } = ToDos;
     let item = todayToDos[index] as ToDoI;
-    //get array
-    const daysDone = item.daysDone;
-    if (daysDone.length > 1) {
-      //daily
-      let indexOfToday = daysDone.findIndex(
-        dayDone => dayDone.dayIndex === 1,
-      );
-      daysDone[indexOfToday].done = newDone;
-    } else {
-      //just on specific day
-      daysDone[0].done = newDone;
-    }
+    item.done = newDone;
     refreshTodayList();
   };
 
@@ -98,15 +77,17 @@ class TodayOverview extends React.Component<PropsI> {
   };
 
   postponeItem = async (indexInList: number, item: ToDoI) => {
-    //change in db
-    updateOnlyDayIndex(item.id, 2)
+    const { dateTime, id } = item;
+    const newDateTime = Moment(dateTime).add("days", 1).toDate();
+    //change date in db
+    updateOnlyDateTime(id, newDateTime);
     //change in redux
     const { todayToDos, futureToDos } = this.props.ToDos;
     //delete from todays list
     todayToDos.splice(indexInList, 1);
     this.props.refreshTodayList();
-    //change dayIndex and add to tomorrows list
-    item.daysDone[0].dayIndex = 2;
+    //add to future list with new date
+    item.dateTime = newDateTime;
     futureToDos.push(item);
     this.props.refreshFutureList();
   };

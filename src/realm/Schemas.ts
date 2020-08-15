@@ -1,6 +1,7 @@
 export const TODO = 'to-do';
 //export const DAYS_DONE = 'DAYS_DONE';
 export const GROUP = "group";
+export const RECURRENCE = "recurrence";
 //export const REMINDER = "REMINDER";
 
 
@@ -12,11 +13,10 @@ export const ToDoSchema = {
     name: {type: 'string', indexed: true},
     notes: {type: 'string'},
     done: {type: "bool"},
-    daily: {type: 'bool'},
     groups: {objectType: GROUP, type: "list"},   //i don't know how to express it as an object
-    date: {type: "date", optional: true, indexed: true}
+    dateTime: {type: "date", optional: true, indexed: true},
+    recurrence: {objectType: RECURRENCE, optional: true}
     //could add a reminder/alarm
-    //could add recurrence => more options than just daily
   },
 };
 
@@ -28,6 +28,15 @@ export const GroupSchema = {
     name: {type: "string", indexed: true},
     notes: {type: "string"},
     //could add a color or default values for reminder/daily/...
+  }
+}
+
+export const RecurrenceSchema = {
+  name: RECURRENCE,
+  primaryKey: "id",
+  properties: {
+    id: {type: "string", indexed: true},
+    recurrenceRule: {type: "string"}
   }
 }
 

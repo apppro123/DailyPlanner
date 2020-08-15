@@ -29,18 +29,16 @@ interface Props {
 }
 
 class OwnIcon extends React.PureComponent<Props> {
-  
+
   render() {
     const {
-      name,
-      size, iconSet,
-      color,
+      iconSet,
       selected,
       theme,
-      style,
-      iconStyle,
+      color,
       label,
       showLabel = false,
+      ...props
     } = this.props;
     const colorProp = selected
       ? theme.colors.primary
@@ -53,60 +51,39 @@ class OwnIcon extends React.PureComponent<Props> {
         {//which group of icons should be selected
           iconSet === 'Feather' ? (
             <IconFeather
-              name={name}
-              size={size}
               color={colorProp}
-              style={style}
-              iconStyle={iconStyle}
+              {...props}
             />
           ) : iconSet === 'MaterialCommunity' ? (
             <IconMaterialCommunity
-              name={name}
-              size={size}
               color={colorProp}
-              style={style}
-              iconStyle={iconStyle}
+              {...props}
             />
           ) : iconSet === 'Material' ? (
             <IconMaterial
-              name={name}
-              size={size}
               color={colorProp}
-              style={style}
-              iconStyle={iconStyle}
+              {...props}
             />
           ) : iconSet === 'AntDesign' ? (
             <IconAntDesign
-              name={name}
-              size={size}
               color={colorProp}
-              style={style}
-              iconStyle={iconStyle}
+              {...props}
             />
           ) : iconSet === 'Oct' ? (
             <IconOct
-              name={name}
-              size={size}
               color={colorProp}
-              style={style}
-              iconStyle={iconStyle}
+              {...props}
             />
           ) : iconSet === 'Entypo' ? (
             <IconEntypo
-              name={name}
-              size={size}
               color={colorProp}
-              style={style}
-              iconStyle={iconStyle}
+              {...props}
             />
           ) : (
                         iconSet === 'SimpleLine' && (
                           <IconSimpleLine
-                            name={name}
-                            size={size}
                             color={colorProp}
-                            style={style}
-                            iconStyle={iconStyle}
+                            {...props}
                           />
                         )
                       )}

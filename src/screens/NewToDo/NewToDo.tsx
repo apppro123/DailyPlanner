@@ -1,35 +1,34 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Modal, ScrollView } from 'react-native';
 import Moment from "moment";
 //db
-import { insertNewToDo } from 'db_realm';
+import { insertNewToDo, getAllGroups } from 'db_realm';
 //uuid generator
 import UUIDGenerator from 'react-native-uuid-generator';
 //redux
 import { connect } from 'react-redux';
 import { refreshDailyList, refreshPastList, refreshTodayList, refreshFutureList } from "../../redux/actions";
-//components
-import DateTimePicker from '@react-native-community/datetimepicker';
 //own components
 import {
   OwnView,
   OwnTextInput,
+  OwnText,
   OwnButton,
   OwnSwitch,
   OwnIcon,
+  TimeDatePicker,
+  SectionIconHeader
 } from 'components';
-//realm
-import {getAllGroups} from "db_realm";
 //navigation
 import { CompositeNavigationProp, RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from '@react-navigation/stack';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { BottomTabNTypes, NewToDoStackNTypes } from "../types";
-//strings
-import { Strings, GroupI } from 'res';
+//strings, interfaces, types
+import { Strings, GroupI, SettingStrings, ToDoStrings, ToDoI } from 'res';
 const { NAME, NOTES, ADD, DAILY } = Strings;
-//interfaces and types
-import { ToDoI } from "res";
+const { GROUPS } = SettingStrings;
+const { PLS_SELECT_TIME_AFTER_NOW } = ToDoStrings;
 import { RootStateType } from 'src/redux/reducers';
 //styles
 import { globalStyles } from '../style';
@@ -63,9 +62,14 @@ interface StateI {
   name: string,
   notes: string,
   daily: boolean,
-  date: Moment.Moment,
+  dateTime: Moment.Moment,
+  allRemainingGroups: GroupI[],
   groups: GroupI[],
-  allGroups: GroupI[]
+  //date time picker
+  datePickerVisible: boolean,
+  timePickerVisible: boolean,
+  //modal for picking from remaining groups
+  groupsModalVisible: boolean
 }
 
 //real screen
@@ -77,9 +81,12 @@ class NewToDo extends React.Component<PropsI, StateI> {
     name: '',
     notes: '',
     daily: false,
-    date: Moment(),
-    groups: [],
-    allGroups: []
+    dateTime: Moment(),
+    allRemainingGroups: [] as GroupI[],
+    groups: [] as GroupI[],
+    datePickerVisible: false,
+    timePickerVisible: false,
+    groupsModalVisible: false
   };
 
   async componentDidMount() {
@@ -105,21 +112,22 @@ class NewToDo extends React.Component<PropsI, StateI> {
     this.setState({
       daily,
     });
-    //add listener, because constructor/componentDidMount doesn't get called anymore
+    //add onFocusListener to refresh day state, and allRemainingGroups
+    //because constructor/componentDidMount doesn't get called anymore
     this.unsubscribeFocus = this.props.navigation.addListener(
       "focus",
-      this.refreshDayState,
+      this.refreshChangedState,
     );
     this.unsubscribeBlur = this.props.navigation.addListener(
       "blur",
-      this.refreshTextInputState
+      this.resetState
     );
 
     //set all groups
-    let allGroups = await getAllGroups();
+    let allRemainingGroups = await getAllGroups();
     this.setState({
       daily,
-      allGroups
+      allRemainingGroups
     })
   }
 
@@ -128,14 +136,16 @@ class NewToDo extends React.Component<PropsI, StateI> {
     this.unsubscribeBlur();
   }
 
-  refreshTextInputState = () => {
+  resetState = () => {
     this.setState({
       name: "",
       notes: "",
+      dateTime: Moment(),
+      groups: []
     })
   }
 
-  refreshDayState = () => {
+  refreshChangedState = async () => {
     this.props.navigation.setParams({ addDisabled: true });
     //test where the navigator is/was
     const { routes, history } = this.props.Navigators.state;
@@ -144,9 +154,12 @@ class NewToDo extends React.Component<PropsI, StateI> {
     if (history && routes) {
       daily = this.checkDaily(history);
     }
+    //get all groups
+    let allRemainingGroups = await getAllGroups();
 
     this.setState({
       daily: daily,
+      allRemainingGroups: allRemainingGroups
     });
   };
 
@@ -180,32 +193,43 @@ class NewToDo extends React.Component<PropsI, StateI> {
 
   //add new to do
   addToDo = async () => {
-    const { name, notes, daily, date } = this.state;
-    //id
-    const uuid = await UUIDGenerator.getRandomUUID();
-    let newToDo = {
-      id: uuid,
+    const { name, notes, daily, dateTime, groups } = this.state;
+    const toDoUuid = await UUIDGenerator.getRandomUUID();
+    let newToDo: ToDoI = {
+      id: toDoUuid,
       name: name.trim(),
       notes: notes.trim(),
-      daily,
-      date: date.toDate()
-    } as ToDoI;
+      groups: groups,
+      dateTime: dateTime.toDate(),
+      done: false,
+    };
+    if (daily) {
+      const recurrenceUuid = await UUIDGenerator.getRandomUUID();
+      newToDo.recurrence = { id: recurrenceUuid, recurrenceRule: "daily" };
+    }
     await insertNewToDo(newToDo);
+
+    if (daily) {
+      //refresh today, all-day and future list
+
+    }
     //inset into redux state
     const { refreshPastList, refreshTodayList, refreshFutureList, refreshDailyList, ToDos } = this.props;
-    const { dailyToDos, pastToDos, todayToDos, futureToDos } = ToDos
+    const { dailyToDos, pastToDos, todayToDos, futureToDos } = ToDos;
     if (daily) {
       //add to-do to daily and today to-dos
+      futureToDos.push(newToDo);
       dailyToDos.push(newToDo);
       todayToDos.push(newToDo);
       //refresh lists
       refreshTodayList();
+      refreshFutureList();
       refreshDailyList();
-    } else if (date.isBefore(Moment().startOf("day"))) {
+    } else if (dateTime.isBefore(Moment().startOf("day"))) {
       //past to-dos
       pastToDos.push(newToDo);
       refreshPastList()
-    } else if (date.isAfter(Moment().endOf("day"))) {
+    } else if (dateTime.isAfter(Moment().endOf("day"))) {
       //future to-dos
       futureToDos.push(newToDo);
       refreshFutureList();
@@ -231,54 +255,141 @@ class NewToDo extends React.Component<PropsI, StateI> {
   //switch daily
   switchDaily = (daily: boolean) => this.setState({ daily });
 
-  //change date
-  setDate = (event, newDate?: Date) => {
-    if (newDate) {
-      this.setState({ date: Moment(newDate) });
+  //TimeDatePicker functions
+  onDatePress = () => this.setState({ datePickerVisible: true });
+  onDateConfirm = (datetime: Date) => {
+    const momentDatetime = Moment(datetime);
+    if (momentDatetime.isAfter(Moment())) {
+      this.setState({
+        dateTime: momentDatetime,
+        datePickerVisible: false,
+      });
+    } else {
+      this.setState({ datePickerVisible: false });
+      alert(PLS_SELECT_TIME_AFTER_NOW);
     }
+  };
+  onDateCancel = () => this.setState({ datePickerVisible: false });
+  onTimePress = () => this.setState({ timePickerVisible: true });
+  onTimeConfirm = (timedate: Date) => {
+    const momentTimeDate = Moment(timedate);
+    if (momentTimeDate.isAfter(Moment())) {
+      this.setState({
+        dateTime: momentTimeDate,
+        timePickerVisible: false,
+      });
+    } else {
+      this.setState({ timePickerVisible: false });
+      alert(PLS_SELECT_TIME_AFTER_NOW);
+    }
+  };
+  onTimeCancel = () => this.setState({ timePickerVisible: false });
+
+  //adding/showing a group
+  onPlusGroupPress = () => {
+    this.setState({
+      groupsModalVisible: true
+    })
+  }
+
+  addGroup = (group: GroupI) => {
+    let { allRemainingGroups, groups } = this.state;
+    //add group to selected groups for to-do
+    groups.push(group)
+    //remove groupd from remaining groups
+    //index of group in remaining groups which should get removed
+    const remainingGroupIndex = allRemainingGroups.findIndex((remainingGroup: GroupI) => remainingGroup.id === group.id);
+    allRemainingGroups.splice(remainingGroupIndex, 1);
+
+    this.setState({ allRemainingGroups, groups, groupsModalVisible: false });
+  }
+
+  renderAddedGroup = (group: GroupI, index: number) => {
+    return (
+      <OwnView style={styles.groupContainer} key={index}>
+        <OwnText text={group.name} style={styles.groupName} />
+        <OwnButton onPress={() => this.removeAddedGroup(group)}>
+          <OwnIcon iconSet="MaterialCommunity" name="trash-can" size={35} />
+        </OwnButton>
+      </OwnView>
+    )
+  }
+
+  removeAddedGroup = (group: GroupI) => {
+    let { allRemainingGroups, groups } = this.state;
+    //add groups to remaining groups
+    allRemainingGroups.push(group);
+    //remove group from addedGroups
+    const addedGroupIndex = groups.findIndex((addedGroup: GroupI) => addedGroup.id === group.id);
+    groups.splice(addedGroupIndex, 1);
+
+    this.setState({ allRemainingGroups, groups });
   }
 
   render() {
-    const { name, notes, daily } = this.state;
+    const { name, notes, daily, dateTime, datePickerVisible,
+      timePickerVisible, groups, allRemainingGroups, groupsModalVisible } = this.state;
     return (
       <OwnView style={globalStyles.screenContainer}>
-        <OwnTextInput
-          style={styles.nameInput}
-          placeholder={NAME}
-          autoFocus={true}
-          value={name}
-          onChangeText={this.changeName}
-        />
-        <OwnTextInput
-          style={styles.notesInput}
-          multiline={true}
-          placeholder={NOTES}
-          value={notes}
-          onChangeText={this.changeNotes}
-        />
-        <OwnView style={styles.switchContainer}>
-          <OwnIcon
-            name={'calendar-clock'}
-            label={DAILY}
-            showLabel={true}
-            iconSet={'MaterialCommunity'}
-            size={35}
+        <ScrollView>
+          <OwnTextInput
+            style={styles.nameInput}
+            placeholder={NAME}
+            autoFocus={true}
+            value={name}
+            onChangeText={this.changeName}
           />
-          <OwnSwitch
-            style={styles.switch}
-            value={this.state.daily}
-            onValueChange={this.switchDaily}
+          <OwnTextInput
+            style={styles.notesInput}
+            multiline={true}
+            placeholder={NOTES}
+            value={notes}
+            onChangeText={this.changeNotes}
           />
-        </OwnView>
-        {!daily && (
-          <DateTimePicker value={this.state.date.toDate()} onChange={this.setDate} minimumDate={Moment().toDate()} is24Hour={true} />
-        )}
+          <OwnView style={styles.switchContainer}>
+            <OwnIcon
+              name={'calendar-clock'}
+              label={DAILY}
+              showLabel={true}
+              iconSet={'MaterialCommunity'}
+              size={35}
+            />
+            <OwnSwitch
+              style={styles.switch}
+              value={daily}
+              onValueChange={this.switchDaily}
+            />
+          </OwnView>
+          <TimeDatePicker
+            allDay={true}
+            value={dateTime.toDate()}
+            dateFunctions={{ onPress: this.onDatePress, onCancel: this.onDateCancel, onConfirm: this.onDateConfirm }}
+            timeFunctions={{ onPress: this.onTimePress, onConfirm: this.onTimeConfirm, onCancel: this.onTimeCancel }}
+            dateVisible={datePickerVisible}
+            timeVisible={timePickerVisible} />
+          <OwnView style={globalStyles.groupSectionContainer}>
+            <SectionIconHeader title={GROUPS} onIconPress={this.onPlusGroupPress} />
+            {groups.length > 0 &&
+              <OwnView style={globalStyles.groupHeaderUnderline} />}
+            {groups.map((group: GroupI, index: number) => this.renderAddedGroup(group, index))}
+          </OwnView>
+          <Modal visible={groupsModalVisible} transparent={true}>
+            <OwnView style={styles.groupsModalContainer}>
+              <OwnView style={styles.groupsModalInnerContainer}>
+                {
+                  allRemainingGroups.map((group, index) => <OwnButton key={index} text={group.name} textStyle={styles.groupsModalName} onPress={() => this.addGroup(group)} />)
+                }
+              </OwnView>
+            </OwnView>
+          </Modal>
+        </ScrollView>
       </OwnView>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  //i can probably remove fontSize: 25 because it is by default in OwnTextInput
   nameInput: {
     fontSize: 25,
     borderBottomWidth: 1,
@@ -300,6 +411,33 @@ const styles = StyleSheet.create({
   switch: {
     transform: [{ scaleX: 1.3 }, { scaleY: 1.3 }],
   },
+  //groups
+  groupContainer: {
+    width: "100%",
+    flexDirection: "row",
+    padding: 5,
+    justifyContent: "space-between",
+    alignItems: "center"
+  },
+  groupName: {
+    fontSize: 25
+  },
+  //modal for remaining groups
+  groupsModalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent"
+  },
+  groupsModalInnerContainer: {
+    padding: 100,
+    borderWidth: 1,
+    borderRadius: 10
+  },
+  groupsModalName: {
+    fontSize: 25,
+    padding: 3
+  }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(NewToDo);

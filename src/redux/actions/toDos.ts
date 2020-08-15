@@ -56,10 +56,10 @@ export const setRefreshAllToDos = (allToDos: ToDoI[]) => {
     if (toDo.daily) {
       //push to every day
       dailyToDos.push(toDo);
-    } else if (Moment(toDo.date).isBefore(Moment().startOf("day"))) {
+    } else if (Moment(toDo.dateTime).isBefore(Moment().startOf("day"))) {
       //push to past
       pastToDos.push(toDo);
-    } else if (Moment(toDo.date).isAfter(Moment().endOf("day"))) {
+    } else if (Moment(toDo.dateTime).isAfter(Moment().endOf("day"))) {
       //push to future
       futureToDos.push(toDo);
     } else {

@@ -3,8 +3,8 @@ import { Modal, StyleSheet } from 'react-native';
 //own components
 import { OwnText, OwnCheckBox, OwnButton, OwnView } from '../basicC';
 //strings
-import { DailyToDosStrings, ToDosOverviewStrings, Strings } from 'res';
-const { CHOOSE_DAYS_KEEP_TODO } = DailyToDosStrings;
+import { ToDoStrings, ToDosOverviewStrings, Strings } from 'res';
+const { CHOOSE_DAYS_KEEP_TODO } = ToDoStrings;
 const { YESTERDAY, TODAY, TOMORROW } = ToDosOverviewStrings;
 const { CANCEL } = Strings;
 

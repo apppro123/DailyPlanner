@@ -13,8 +13,8 @@ import { BottomTabNTypes } from "./types";
 //own components
 import { OwnIcon, OwnView, OwnButton } from 'components';
 //strings
-import { DailyToDosStrings, ToDosOverviewStrings } from 'res';
-const { DAILY_TODOS } = DailyToDosStrings;
+import { ToDoStrings, ToDosOverviewStrings } from 'res';
+const { DAILY_TODOS } = ToDoStrings;
 const { TODOS } = ToDosOverviewStrings;
 
 const Tab = createBottomTabNavigator<BottomTabNTypes>();
@@ -59,6 +59,11 @@ export function BottomNavigator() {
 
 //onw custom tabBar
 function CustomTabBar({ state, descriptors, navigation }) {
+  const focusedOptions = descriptors[state.routes[state.index].key].options;
+
+  if (focusedOptions.tabBarVisible === false) {
+    return null;
+  }
   return (
     <OwnView style={styles.mainBackground}>
       {/* render settings button not in tab-bar */}

@@ -16,13 +16,18 @@ export interface ToDoI {
   name: string;
   notes: string;
   done: boolean;
-  daily: boolean;
   groups: GroupI[];
-  date: Date
+  dateTime: Date,
+  recurrence?: RecurrenceI
 }
 
 export interface GroupI{
   id: string,
   name: string,
   notes: string
+}
+
+export interface RecurrenceI {
+  id: string,
+  recurrenceRule: "daily"   //late i can add more like "weekly", ...
 }

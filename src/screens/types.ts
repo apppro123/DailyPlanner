@@ -1,5 +1,5 @@
 //interfaces
-import {ToDoI} from "res";
+import {ToDoI, GroupI} from "res";
 
 export type BottomTabNTypes = {
     ToDosOverviewN: undefined,
@@ -28,5 +28,7 @@ export type NewToDoStackNTypes = {
 }
 
 export type SettingsStackNTypes = {
-    SettingsOverview: undefined
+    SettingsOverview: undefined,
+    GroupsOverview: {groups: GroupI[]} | undefined ,
+    Group: {mode: "new" | "change", groupId?: string, addDisabled: boolean}
 }

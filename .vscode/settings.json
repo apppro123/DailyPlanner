@@ -1,0 +1,4 @@
+{
+    "prettier.packageManager": "yarn",
+    "prettier.proseWrap": "always"
+}

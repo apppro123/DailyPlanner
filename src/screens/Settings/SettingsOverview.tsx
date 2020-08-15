@@ -5,10 +5,13 @@ import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from '@react-navigation/stack';
 import { SettingsStackNTypes } from "../types";
 //components
-import {OverviewList, OwnText, OwnView} from "components";
+import {OverviewList, OwnText, OwnView, OwnButton} from "components";
 //strings
 import { SettingStrings} from "res";
 const { GROUPS } = SettingStrings;
+//styles
+import {globalStyles} from "../style";
+const {screenContainer} = globalStyles; 
 
 //navigation props
 type SettingsNavigationProps = StackNavigationProp<SettingsStackNTypes, "SettingsOverview">;
@@ -26,28 +29,30 @@ class SettingsOverview extends React.Component<PropsI, StateI> {
     constructor(props: PropsI){
         super(props);
 
-        const settingsOptions = [{renderItem: () => this.renderNormalItem(GROUPS, )}]
+        const settingsOptions = [{renderItem: () => this.renderNormalItem(GROUPS)}];
 
         this.state = {
-            settingsOptions
+            settingsOptions: settingsOptions
         }
     }
 
     //get a title 
     renderNormalItem = (title: string) => {
+        const {navigation}  = this.props
         return (
-            <OwnView style={styles.itemContainer}>
-                <OwnText text={title}/>
-            </OwnView>
+            <OwnButton style={styles.itemContainer} onPress={() => navigation.navigate("GroupsOverview")}>
+                <OwnText style={styles.itemText} text={title}/>
+            </OwnButton>
         )
     }
 
     renderItem = ({item, index}) => {
-        return item.renderItem
+        return item.renderItem();
     }
+    
     render() {
         return(
-            <OwnView>
+            <OwnView style={screenContainer}>
                 <OverviewList data={this.state.settingsOptions} renderItem={this.renderItem}/> 
             </OwnView>
         )
@@ -59,7 +64,9 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 100,
         justifyContent: "center",
-
+    },
+    itemText: {
+        fontSize: 20
     }
 })
 

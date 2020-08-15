@@ -11,7 +11,6 @@ const {CANCEL, DELETE_TODO, WANT_DELETE_TODO} = Strings;
 import {globalStyles} from '../../screens/style';
 
 interface PropsI <NavigationType>{
-  checked: boolean;
   item: ToDoI;
   index: number;
   deleteToDo: (id: string, index: number) => void;
@@ -22,7 +21,7 @@ interface PropsI <NavigationType>{
 
 export class ToDoItem<NavigationType> extends React.Component<PropsI<NavigationType>> {
   shouldComponentUpdate(nextProps: PropsI<NavigationType>) {
-    if (nextProps.checked !== this.props.checked) {
+    if (nextProps.item.done !== this.props.item.done) {
       return true;
     } else if (nextProps.item.name !== this.props.item.name) {
       return true;
@@ -42,7 +41,8 @@ export class ToDoItem<NavigationType> extends React.Component<PropsI<NavigationT
 
   onCheckSwitch = () => {
     const {item, index} = this.props;
-    this.props.onCheckSwitch(!this.props.checked, item.id, index);
+    const {done, id} = item;
+    this.props.onCheckSwitch(!done, id, index);
   };
 
   postponeItem = () => {
@@ -59,12 +59,12 @@ export class ToDoItem<NavigationType> extends React.Component<PropsI<NavigationT
   };
 
   render() {
-    const {checked = false, item} = this.props;
-    const {daily, name, done} = item;
+    const {item} = this.props;
+    const {daily, name, done=false} = item;
     return (
     <OwnView style={styles.container}>
       <OwnView style={styles.checkTextContainer}>
-        <OwnCheckBox checked={checked} onPress={this.onCheckSwitch} />
+        <OwnCheckBox checked={done} onPress={this.onCheckSwitch} />
         <OwnButton
           onPress={this.navigateToChange}
           textStyle={styles.text}

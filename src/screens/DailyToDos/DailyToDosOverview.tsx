@@ -15,8 +15,6 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { BottomTabNTypes, DailyToDosOverviewStackNTypes } from "../types";
 //realm
 import {getAllToDos, deleteToDo} from 'db_realm';
-//uuid generator
-import UUIDGenerator from 'react-native-uuid-generator';
 //redux
 import {connect} from 'react-redux';
 import {setRefreshAllToDos} from '../../redux/actions';

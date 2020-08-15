@@ -1,103 +1,112 @@
+import Moment from "moment";
+
 import Realm from 'realm';
 import {TODO} from '../Schemas';
 import {schemas} from '../dbOptions';
 //interfaces
 import {ToDoI} from 'res';
-//latest schema 
-const latestSchema = schemas[schemas.length-1]
+//latest schema
+const latestSchema = schemas[schemas.length - 1];
 
 export const insertNewToDo = (newToDo: ToDoI) =>
   new Promise((resolve, reject) => {
     Realm.open(latestSchema)
-      .then(realm => {
+      .then((realm) => {
         realm.write(() => {
-          realm.create(TODO, newToDo);
+          let {dateTime, recurrence} = newToDo;
+          if(recurrence){
+            //at the moment it just can be daily so odnt have to test recurrenceRule yet
+            for(let i=0; i<10; i++){
+              dateTime = Moment(dateTime).add(1, "days").toDate();
+              realm.create(TODO, newToDo);
+            }
+          }
           resolve();
         });
       })
-      .catch(error => reject(error));
+      .catch((error) => reject(error));
   });
 
 export const updateToDo = (newToDo: ToDoI) =>
   new Promise<ToDoI[]>((resolve, reject) => {
     Realm.open(latestSchema)
-      .then(realm => {
+      .then((realm) => {
         realm.write(() => {
-          const {name, notes, done, daily} = newToDo;
+          const {name, notes, done, recurrence} = newToDo;
           let updatingToDo = realm.objectForPrimaryKey(
             TODO,
             newToDo.id,
           ) as ToDoI;
           updatingToDo.name = name;
           updatingToDo.notes = notes;
-          updatingToDo.daily = daily;
+          updatingToDo.recurrence = recurrence;
           updatingToDo.done = done;
           //get and return all to-dos
           const allToDos = realm.objects<ToDoI>(TODO);
           resolve(realmObjectToArray(allToDos));
         });
       })
-      .catch(error => reject(error));
+      .catch((error) => reject(error));
   });
 
 //update only curtain properties of to-do
 export const updateOnlyDone = (done: boolean, id: string) =>
   new Promise((resolve, reject) => {
     Realm.open(latestSchema)
-      .then(realm => {
+      .then((realm) => {
         realm.write(() => {
           let updatingToDo = realm.objectForPrimaryKey(TODO, id) as ToDoI;
           updatingToDo.done = done;
         });
       })
-      .catch(error => reject(error));
+      .catch((error) => reject(error));
   });
 
-export const updateOnlyDate = (id: string, newDate: Date) =>
+export const updateOnlyDateTime = (id: string, newDate: Date) =>
   new Promise((resolve, reject) => {
     Realm.open(latestSchema)
-      .then(realm => {
+      .then((realm) => {
         realm.write(() => {
           let updatingToDo = realm.objectForPrimaryKey(TODO, id) as ToDoI;
-          updatingToDo.date = newDate;
+          updatingToDo.dateTime = newDate;
           resolve();
         });
       })
-      .catch(error => reject(error));
+      .catch((error) => reject(error));
   });
 
 export const deleteToDo = (id: string) =>
   new Promise((resolve, reject) => {
     Realm.open(latestSchema)
-      .then(realm => {
+      .then((realm) => {
         realm.write(() => {
           let deletingToDo = realm.objectForPrimaryKey(TODO, id);
           realm.delete(deletingToDo);
           resolve();
         });
       })
-      .catch(error => reject(error));
+      .catch((error) => reject(error));
   });
 
 export const getToDoById = (id: string) =>
   new Promise<ToDoI>((resolve, reject) => {
     Realm.open(latestSchema)
-      .then(realm => {
+      .then((realm) => {
         const allToDos = realm.objects<ToDoI>(TODO);
         const toDoById = allToDos.filtered('id == $0', id)[0];
         resolve(toDoById);
       })
-      .catch(error => reject(error));
+      .catch((error) => reject(error));
   });
 
 export const getAllToDos = () =>
   new Promise<ToDoI[]>((resolve, reject) => {
     Realm.open(latestSchema)
-      .then(realm => {
+      .then((realm) => {
         const rawAllToDos = realm.objects<ToDoI>(TODO);
-        resolve(realmObjectToArray(rawAllToDos)); 
+        resolve(realmObjectToArray(rawAllToDos));
       })
-      .catch(error => reject(error));
+      .catch((error) => reject(error));
   });
 
 /* export const getAllDaysDone = () =>
@@ -114,27 +123,30 @@ export const getAllToDos = () =>
 export const deleteDailyToDo = (idToDelete: string, newToDos: ToDoI[]) =>
   new Promise((resolve, reject) => {
     Realm.open(latestSchema)
-      .then(realm => {
+      .then((realm) => {
         realm.write(() => {
           for (const newToDo of newToDos) {
             realm.create(TODO, newToDo);
           }
           //delete to-do
-          let deletingToDo = realm.objectForPrimaryKey(TODO, idToDelete) as ToDoI;
+          let deletingToDo = realm.objectForPrimaryKey(
+            TODO,
+            idToDelete,
+          ) as ToDoI;
           realm.delete(deletingToDo);
           resolve();
         });
       })
-      .catch(error => reject(error));
+      .catch((error) => reject(error));
   });
 
 export const updateAfterDateChanged = () =>
   new Promise<ToDoI[]>((resolve, reject) => {
     Realm.open(latestSchema)
-      .then(realm => {
+      .then((realm) => {
         realm.write(() => {
           let allToDos = realm.objects<ToDoI>(TODO);
-          //ids to to delete
+          //ids to  delete
           allToDos.map((toDo: ToDoI) => {
             if (toDo.daily) {
               toDo.done = false;
@@ -143,15 +155,16 @@ export const updateAfterDateChanged = () =>
           resolve(realmObjectToArray(realm.objects<ToDoI>(TODO)));
         });
       })
-      .catch(error => reject(error));
+      .catch((error) => reject(error));
   });
 
-
 //convert realm object to js array and make it mutable
-export function realmObjectToArray<T> (realmObject: Realm.Results<T & Realm.Object>) {
+export function realmObjectToArray<T>(
+  realmObject: Realm.Results<T & Realm.Object>,
+) {
   let realmArray = [] as T[];
   //go over realmObject
-  for(const keyToDo in realmObject){
+  for (const keyToDo in realmObject) {
     let realmSingleObject = realmObject[keyToDo];
     //clone object
     let realmSingleClonedObject = JSON.parse(JSON.stringify(realmSingleObject));

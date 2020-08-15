@@ -1,20 +1,39 @@
 import React from "react";
-import { Switch } from "react-native";
+import { Switch, StyleSheet } from "react-native";
+import OwnView from "./View";
+import OwnText from "./Text";
 
 interface OwnSwitchProps {
     onValueChange: (value: boolean) => void,
-    value: boolean, 
-    style?: {}
+    value: boolean,
+    style?: {},
+    text?: string
 }
 
 //for ios it is possible that style needs ios_backgroundColor in addition
 
-const OwnSwitch = ({ onValueChange, value, style}: OwnSwitchProps) => {
+const OwnSwitch = ({ onValueChange, value, style, text }: OwnSwitchProps) => {
     return (
-        <Switch style={style} /*trackColor={"#BDBDBD"} thumbColor={theme.secondary} tintColor={"#58D3F7"}*/
-            value={value}
-            onValueChange={onValueChange} />
+        <OwnView style={styles.container}>
+            {text && <OwnText text={text} style={styles.text}/>}
+            <Switch style={style} /*trackColor={"#BDBDBD"} thumbColor={theme.secondary} tintColor={"#58D3F7"}*/
+                value={value}
+                onValueChange={onValueChange} />
+        </OwnView>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        widht: "100%",
+        padding: 5,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between";
+    },
+    text: {
+        fontSize: 25
+    }
+})
 
 export default OwnSwitch

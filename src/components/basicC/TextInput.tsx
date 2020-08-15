@@ -24,6 +24,7 @@ const StyledTextInput = styled.TextInput.attrs<{theme: ThemeI}>(({theme}) => ({
   color: ${({theme}) => theme.colors.primary};
   background-color: ${({theme}) => theme.colors.background};
   border-color: ${({theme}) => theme.colors.border};
+  font-size: 25px;
 `;
 
 const StyledTextInputContainer = styled.View<TextInputContainerProps>`

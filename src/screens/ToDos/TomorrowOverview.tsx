@@ -14,7 +14,7 @@ import {
 //db
 import {updateOnlyDone, deleteToDo} from 'db_realm';
 //interfaces and types
-import { DaysDoneI } from "res";
+import { ToDoI } from "res";
 import { RootStateType } from 'src/redux/reducers';
 //styles
 import {globalStyles} from '../style';
@@ -41,20 +41,9 @@ interface PropsI extends PropsFromRedux{
 
 
 class TomorrowOverview extends React.Component<PropsI> {
-  renderTomorrowToDo = ({item, index}) => {
-    let checked = false;
-    const daysDone = item.daysDone as DaysDoneI[];
-    if (daysDone.length > 1) {
-      let indexOfToday = daysDone.findIndex(
-        dayDone => dayDone.dayIndex === 2,
-      );
-      checked = daysDone[indexOfToday].done;
-    } else if(daysDone.length === 1){
-      checked = daysDone[0].done;
-    }
+  renderTomorrowToDo = ({item, index}: { item: ToDoI, index: number }) => {
     return (
       <ToDoItem<TomorrowOverviewNavigationProps>
-        checked={checked}
         item={item}
         index={index} //index of item in the array
         onCheckSwitch={this.onCheckSwitch}
@@ -68,26 +57,15 @@ class TomorrowOverview extends React.Component<PropsI> {
   onCheckSwitch = async (newDone: boolean, id: string, index: number /*index of item in the list*/) => {
     const {refreshFutureList, ToDos} = this.props;
     //update realm
-    await updateOnlyDone(newDone, id, 2);
+    await updateOnlyDone(newDone, id);
     //update redux
     let {futureToDos} = ToDos;
     let item = futureToDos[index];
-    //get array
-    const daysDone = item.daysDone as DaysDoneI[]
-    if (daysDone.length > 1) {
-      //daily
-      let indexOfToday = daysDone.findIndex(
-        dayDone => dayDone.dayIndex === 2,
-      );
-      daysDone[indexOfToday].done = newDone;
-    } else {
-      //just on specific day
-      daysDone[0].done = newDone;
-    }
+    item.done = newDone;
     refreshFutureList();
   };
 
-  deleteToDo = async (id, indexInList) => {
+  deleteToDo = async (id: string, indexInList: number) => {
     //delete in db
     await deleteToDo(id);
     //delete in redux
