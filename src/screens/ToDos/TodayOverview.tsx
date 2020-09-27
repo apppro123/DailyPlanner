@@ -78,7 +78,7 @@ class TodayOverview extends React.Component<PropsI> {
 
   postponeItem = async (indexInList: number, item: ToDoI) => {
     const { dateTime, id } = item;
-    const newDateTime = Moment(dateTime).add("days", 1).toDate();
+    const newDateTime = Moment(dateTime).add(1, "days").toDate();
     //change date in db
     updateOnlyDateTime(id, newDateTime);
     //change in redux

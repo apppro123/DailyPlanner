@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Modal, ScrollView } from 'react-native';
 //db
-import { updateToDo, getAllGroups } from 'db_realm';
+import { updateToDo, getAllGroups, deleteRecurrence, insertNewRecurrence } from 'db_realm';
 //uuid generator
 import UUIDGenerator from 'react-native-uuid-generator';
 //redux
@@ -73,12 +73,12 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
   constructor(props: PropsI) {
     super(props);
     //get to-do
-    const { name, notes, recurrence, dateTime } = this.props.route.params?.toDo;
+    const { name, notes, recurrenceId, dateTime } = this.props.route.params?.toDo;
     this.state = {
       name: name,
       notes: notes,
       dateTime: Moment(dateTime),
-      daily: recurrence ? true : false,
+      daily: recurrenceId ? true : false,
       groups: [] as GroupI[],
       allRemainingGroups: [] as GroupI[],
       datePickerVisible: false,
@@ -119,12 +119,12 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
 
   //change to-do
   changeAfterFocus = () => {
-    const { name, notes, recurrence, dateTime } = this.props.route.params.toDo;
+    const { name, notes, recurrenceId, dateTime } = this.props.route.params.toDo;
     this.setState({
       name: name,
       notes: notes,
       dateTime: Moment(dateTime),
-      daily: recurrence ? true : false,
+      daily: recurrenceId ? true : false,
     });
   };
 
@@ -133,20 +133,25 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
     const oldToDo = this.props.route.params.toDo;
     const { name, notes, daily, dateTime, groups } = this.state;
 
-    let changedRecurrence: RecurrenceI | null = null;
-    if (!oldToDo.recurrence) {
+    let changedRecurrenceId = oldToDo.recurrenceId;
+    if (!oldToDo.recurrenceId) {
       //if old recurrence was not set
       if (daily) {
         //now it has recurence
-        const id = UUIDGenerator.getRandomUUID();
-        changedRecurrence = { id: id, recurrenceRule: "daily" }
+        const recurrenceUUID = UUIDGenerator.getRandomUUID();
+        changedRecurrenceId = recurrenceUUID;
+        await insertNewRecurrence({ id: recurrenceUUID, recurrenceRule: "daily" })
       }
     } else {
       //recurrence was set
-      if (daily) {
-        //recurrence is still set
-        changedRecurrence = oldToDo.recurrence;
+      if (!daily) {
+        //reccurrence is not set anymore
+        await deleteRecurrence(oldToDo.recurrenceId);
+        changedRecurrenceId = undefined;
       }
+      /* else{
+        no more changes than daily to check
+      } */
     }
 
     let changedToDo = {
@@ -154,8 +159,8 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
       name: name.trim(),
       notes: notes.trim(),
       dateTime: dateTime.toDate(),
-      recurrence: changedRecurrence,
-      groups: groups,
+      recurrenceId: changedRecurrenceId,
+      //groupsIds: groups,
       done: oldToDo.done
     } as ToDoI;
     const allToDos = await updateToDo(changedToDo);
@@ -211,8 +216,17 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
 
   //adding/showing a group
   onPlusGroupPress = () => {
+    if (this.state.allRemainingGroups.length > 0) {
+      this.setState({
+        groupsModalVisible: true
+      })
+    } else {
+      alert("No Groups left.")
+    }
+  }
+  closeGroupModal = () => {
     this.setState({
-      groupsModalVisible: true
+      groupsModalVisible: false
     })
   }
 
@@ -301,6 +315,9 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
           <Modal visible={groupsModalVisible} transparent={true}>
             <OwnView style={styles.groupsModalContainer}>
               <OwnView style={styles.groupsModalInnerContainer}>
+                <OwnButton style={styles.cancelModalButton} onPress={this.closeGroupModal}>
+                  <OwnIcon iconSet="MaterialCommunity" name="close" size={35} />
+                </OwnButton>
                 {
                   allRemainingGroups.map((group, index) => <OwnButton key={index} text={group.name} textStyle={styles.groupsModalName} onPress={() => this.addGroup(group)} />)
                 }
@@ -361,6 +378,11 @@ const styles = StyleSheet.create({
   groupsModalName: {
     fontSize: 25,
     padding: 3
+  },
+  cancelModalButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
   }
 });
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Modal, ScrollView } from 'react-native';
 import Moment from "moment";
 //db
-import { insertNewToDo, getAllGroups } from 'db_realm';
+import { insertNewToDo, getAllGroups, insertNewRecurrence } from 'db_realm';
 //uuid generator
 import UUIDGenerator from 'react-native-uuid-generator';
 //redux
@@ -199,16 +199,17 @@ class NewToDo extends React.Component<PropsI, StateI> {
       id: toDoUuid,
       name: name.trim(),
       notes: notes.trim(),
-      groups: groups,
+      groupIds: groups.map((group: GroupI) => group.id),
       dateTime: dateTime.toDate(),
       done: false,
     };
     if (daily) {
-      const recurrenceUuid = await UUIDGenerator.getRandomUUID();
-      newToDo.recurrence = { id: recurrenceUuid, recurrenceRule: "daily" };
+      const recurrenceUUID = await UUIDGenerator.getRandomUUID();
+      newToDo.recurrenceId = recurrenceUUID;
+      //insert new recurrence
+      await insertNewRecurrence({ id: recurrenceUUID, recurrenceRule: "daily" });
     }
     await insertNewToDo(newToDo);
-
     if (daily) {
       //refresh today, all-day and future list
 
@@ -287,8 +288,18 @@ class NewToDo extends React.Component<PropsI, StateI> {
 
   //adding/showing a group
   onPlusGroupPress = () => {
+    if (this.state.allRemainingGroups.length > 0) {
+      this.setState({
+        groupsModalVisible: true
+      })
+    } else {
+      alert("No Groups left.")
+    }
+  }
+
+  closeGroupModal = () => {
     this.setState({
-      groupsModalVisible: true
+      groupsModalVisible: false
     })
   }
 
@@ -376,6 +387,9 @@ class NewToDo extends React.Component<PropsI, StateI> {
           <Modal visible={groupsModalVisible} transparent={true}>
             <OwnView style={styles.groupsModalContainer}>
               <OwnView style={styles.groupsModalInnerContainer}>
+                <OwnButton style={styles.cancelModalButton} onPress={this.closeGroupModal}>
+                  <OwnIcon iconSet="MaterialCommunity" name="close" size={35} />
+                </OwnButton>
                 {
                   allRemainingGroups.map((group, index) => <OwnButton key={index} text={group.name} textStyle={styles.groupsModalName} onPress={() => this.addGroup(group)} />)
                 }
@@ -437,6 +451,11 @@ const styles = StyleSheet.create({
   groupsModalName: {
     fontSize: 25,
     padding: 3
+  },
+  cancelModalButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
   }
 });
 

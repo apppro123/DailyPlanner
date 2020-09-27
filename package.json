@@ -33,9 +33,9 @@
     "react-native-vector-icons": "^7.0.0",
     "react-navigation": "^4.4.0",
     "react-redux": "^7.2.0",
-    "realm": "^6.0.2",
     "redux": "^4.0.5",
-    "styled-components": "^5.1.1"
+    "styled-components": "^5.1.1",
+    "vasern": "^0.3.62"
   },
   "devDependencies": {
     "@babel/core": "^7.10.4",
@@ -54,5 +54,9 @@
   },
   "jest": {
     "preset": "react-native"
-  }
+  },
+  "main": "index.js",
+  "repository": "https://github.com/apppro123/DailyPlanner2.git",
+  "author": "Noah Matt <kalenderapp@hotmail.com>",
+  "license": "MIT"
 }

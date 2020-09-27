@@ -18,6 +18,16 @@ export const getAllGroups = () =>
       .catch((error) => reject(error));
   });
 
+/* export const getAllGroupIds = () => 
+  new Promise<string[]>((resolve, reject) => {
+    Realm.open(latestSchema)
+      .then((realm) => {
+        const allGroupIds = realm.objects<GroupI>(GROUP).map((group: GroupI) => group.id);
+        resolve(allGroupIds);
+      })
+      .catch((error) => reject(error));
+  }); */
+
 export const deleteGroup = (id: string) =>
   new Promise<GroupI[]>((resolve, reject) => {
     Realm.open(latestSchema)

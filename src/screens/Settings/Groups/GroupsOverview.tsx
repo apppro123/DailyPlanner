@@ -28,7 +28,7 @@ interface StateI {
 }
 
 class GroupsOverview extends React.Component<PropsI, StateI> {
-    unsubscribeFocus: any
+    unsubscribeFocus: any;
 
     constructor(props: PropsI) {
         super(props);
