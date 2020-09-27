@@ -1,7 +1,7 @@
-export const TODO = 'TO_DO';
+export const TODO = 'ToDo';
 //export const DAYS_DONE = 'DAYS_DONE';
-export const GROUP = "GROUP";
-export const RECURRENCE = "RECURRENCE";
+export const GROUP = "Group";
+export const RECURRENCE = "Recurrence";
 //export const REMINDER = "REMINDER";
 
 export class ToDoModel {
@@ -13,7 +13,7 @@ export class ToDoModel {
         done: "string",
         groups: "[]#GROUP",
         dateTime: "?datetime",
-        recurrence: "#RECURRENCE"
+        recurrence: "?#RECURRENCE"
         //add reminde/alarm
     }
 }

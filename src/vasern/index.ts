@@ -1,6 +1,6 @@
 import VasernDB from "./db";
 
-const { TO_DO, GROUP, RECURRENCE } = VasernDB;
+const { ToDo, Group, Recurrence } = VasernDB;
 
 export default VasernDB;
-export { TO_DO, GROUP, RECURRENCE };
+export { ToDo as ToDoDB, Group as GroupDB, Recurrence as RecurrenceDB };

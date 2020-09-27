@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet, Modal, ScrollView } from 'react-native';
 import Moment from "moment";
-//db
+//vasern db
+import {ToDoDB, GroupDB} from "db_vasern";
 import { insertNewToDo, getAllGroups, insertNewRecurrence } from 'db_realm';
 //uuid generator
 import UUIDGenerator from 'react-native-uuid-generator';
@@ -199,15 +200,13 @@ class NewToDo extends React.Component<PropsI, StateI> {
       id: toDoUuid,
       name: name.trim(),
       notes: notes.trim(),
-      groupIds: groups.map((group: GroupI) => group.id),
+      groups: groups,
       dateTime: dateTime.toDate(),
       done: false,
     };
     if (daily) {
       const recurrenceUUID = await UUIDGenerator.getRandomUUID();
-      newToDo.recurrenceId = recurrenceUUID;
-      //insert new recurrence
-      await insertNewRecurrence({ id: recurrenceUUID, recurrenceRule: "daily" });
+      newToDo.recurrence = {id: recurrenceUUID, recurrenceRule: "daily" };
     }
     await insertNewToDo(newToDo);
     if (daily) {

@@ -3,8 +3,8 @@ import { View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 //library for time/date/...
 import Moment from 'moment';
-//realm db
-import { updateAfterDateChanged, getAllToDos } from 'db_realm';
+//vasern db
+import {ToDoDB} from "db_vasern";
 //where screens get loaded
 import Main from './src';
 //redux
@@ -31,14 +31,16 @@ class App extends React.Component<{}, StateI> {
   };
 
   componentDidMount() {
-    this.makeCalculations();
+    //this.makeCalculations();
+    console.log(ToDoDB.data());
   }
 
   componentWillUnmount() {
     clearInterval(this.state.intervalId);
   }
 
-  makeCalculations = async () => {
+  /* look if date changed and refresh ToDos if necessary */
+  /* makeCalculations = async () => {
     const LATEST_DATE = 'latestDate';
     try {
       //get last saved date
@@ -76,9 +78,9 @@ class App extends React.Component<{}, StateI> {
       alert('Sorry, an error occured!');
       this.setState({ calculationsMade: true });
     }
-  };
+  }; */
 
-  checkDateChanged = async () => {
+  /* checkDateChanged = async () => {
     const LATEST_DATE = 'latestDate';
     //get latest date from state
     const latestDate = Moment(this.state.latestDate, FORMAT);
@@ -90,7 +92,7 @@ class App extends React.Component<{}, StateI> {
       await AsyncStorage.setItem(LATEST_DATE, newLatestDate);
       this.state.latestDate = newLatestDate;
     }
-  };
+  }; */
 
   render() {
     return (
