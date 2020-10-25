@@ -6,12 +6,13 @@ import { SettingsStackNTypes } from "../../types";
 //components
 import { OwnText, OwnView, OverviewList, OwnButton } from "components";
 //db realm
-import { getAllGroups } from "db_realm";
+//import { getAllGroups } from "db_realm";
 //strings
 import { SettingStrings, GroupI } from "res";
 const { GROUPS } = SettingStrings;
 //styles
 import { globalStyles } from "../../style";
+import { GroupDB } from "db_vasern";
 const { listItemContainer, screenContainer } = globalStyles;
 
 //navigation props
@@ -40,7 +41,7 @@ class GroupsOverview extends React.Component<PropsI, StateI> {
 
     async componentDidMount() {
         //set new groups
-        let allGroups = await getAllGroups();
+        let allGroups = GroupDB.data();
         this.setState({ groups: allGroups });
 
         //add onFocusListener to refresh group after change/add group, 

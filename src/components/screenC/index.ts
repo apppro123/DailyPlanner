@@ -4,5 +4,6 @@ export * from "./SwitchDays";
 export * from "./DeleteDailyToDoModal";
 export * from "./TimeDatePicker";
 export * from "./SectionIconHeader";
+export * from "./OverviewSectionList";
 import SettingsButton from "./SettingsButton";
 export {SettingsButton}

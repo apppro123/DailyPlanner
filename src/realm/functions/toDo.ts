@@ -1,4 +1,4 @@
-import Moment from "moment";
+/* import Moment from "moment";
 import {TODO} from '../Schemas';
 import {schemas} from '../dbOptions';
 //interfaces
@@ -110,7 +110,7 @@ export const getAllToDos = () =>
       .catch((error) => reject(error));
   });
 
-/* export const getAllDaysDone = () =>
+export const getAllDaysDone = () =>
   new Promise<DaysDoneI[]>((resolve, reject) => {
     Realm.open(latestSchema)
       .then(realm => {
@@ -118,7 +118,7 @@ export const getAllToDos = () =>
         resolve(Array.from(allDaysDone));
       })
       .catch(error => reject(error));
-  }); */
+  });
 
 //delete daily to-do and maybe make new ones for the selected days
 export const deleteDailyToDo = (idToDelete: string, newToDos: ToDoI[]) =>
@@ -173,3 +173,4 @@ export function realmObjectToArray<T>(
   }
   return realmArray;
 }
+ */

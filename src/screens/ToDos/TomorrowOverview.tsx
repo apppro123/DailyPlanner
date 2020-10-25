@@ -1,6 +1,6 @@
 import React from 'react';
 //own components
-import {OwnView, OverviewList, ToDoItem} from 'components';
+import {OwnView, OverviewList, ToDoItem, OverviewSectionList} from 'components';
 //navigation
 import { CompositeNavigationProp } from "@react-navigation/native";
 import { MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
@@ -12,12 +12,13 @@ import {
   refreshFutureList,
 } from '../../redux/actions';
 //db
-import {updateOnlyDone, deleteToDo} from 'db_realm';
+//import {updateOnlyDone, deleteToDo} from 'db_realm';
 //interfaces and types
 import { ToDoI } from "res";
 import { RootStateType } from 'src/redux/reducers';
 //styles
 import {globalStyles} from '../style';
+import { ToDoDB } from 'db_vasern';
 
 //typescript for redux
 const mapStateToProps = (state: RootStateType) => {
@@ -57,7 +58,8 @@ class TomorrowOverview extends React.Component<PropsI> {
   onCheckSwitch = async (newDone: boolean, id: string, index: number /*index of item in the list*/) => {
     const {refreshFutureList, ToDos} = this.props;
     //update realm
-    await updateOnlyDone(newDone, id);
+    //await updateOnlyDone(newDone, id);
+    ToDoDB.update(id, {done: newDone});
     //update redux
     let {futureToDos} = ToDos;
     let item = futureToDos[index];
@@ -67,7 +69,8 @@ class TomorrowOverview extends React.Component<PropsI> {
 
   deleteToDo = async (id: string, indexInList: number) => {
     //delete in db
-    await deleteToDo(id);
+    //await deleteToDo(id);
+    ToDoDB.remove(id);
     //delete in redux
     const {futureToDos} = this.props.ToDos;
     futureToDos.splice(indexInList, 1);
@@ -78,8 +81,8 @@ class TomorrowOverview extends React.Component<PropsI> {
     const {refreshFutureList, futureToDos} = this.props.ToDos;
     return (
       <OwnView style={globalStyles.screenContainer}>
-        <OverviewList
-          data={futureToDos}
+        <OverviewSectionList
+          sections={futureToDos}
           renderItem={this.renderTomorrowToDo}
           extraData={refreshFutureList}
         />

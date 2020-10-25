@@ -1,4 +1,4 @@
-import Realm from 'realm';
+/* import Realm from 'realm';
 import {GROUP} from '../Schemas';
 import {schemas} from '../dbOptions';
 //function to get array from realm object
@@ -18,7 +18,7 @@ export const getAllGroups = () =>
       .catch((error) => reject(error));
   });
 
-/* export const getAllGroupIds = () => 
+export const getAllGroupIds = () => 
   new Promise<string[]>((resolve, reject) => {
     Realm.open(latestSchema)
       .then((realm) => {
@@ -26,7 +26,7 @@ export const getAllGroups = () =>
         resolve(allGroupIds);
       })
       .catch((error) => reject(error));
-  }); */
+  });
 
 export const deleteGroup = (id: string) =>
   new Promise<GroupI[]>((resolve, reject) => {
@@ -83,3 +83,4 @@ export const updateGroup = (newGroup: GroupI) =>
       })
       .catch((error) => reject(error));
   });
+ */

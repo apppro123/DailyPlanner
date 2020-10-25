@@ -4,13 +4,12 @@ export const GROUP = "Group";
 export const RECURRENCE = "Recurrence";
 //export const REMINDER = "REMINDER";
 
-export class ToDoModel {
-    name=TODO;
-    props = {
-        id: "string",
+export const ToDoModel = {
+    name: TODO,
+    props: {
         name: "string",
         notes: "string",
-        done: "string",
+        done: "boolean",
         groups: "[]#GROUP",
         dateTime: "?datetime",
         recurrence: "?#RECURRENCE"
@@ -18,19 +17,17 @@ export class ToDoModel {
     }
 }
 
-export class GroupModel {
-    name=GROUP;
-    props = {
-        id: "string",
+export const GroupModel = {
+    name: GROUP,
+    props: {
         name: "string",
         notes: "string"
     }
 }
 
-export class RecurrenceModel {
-    name = RECURRENCE;
-    props = {
-        id: "string",
+export const RecurrenceModel = {
+    name: RECURRENCE,
+    props: {
         recurrenceRule: "string"
     }
 }

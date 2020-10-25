@@ -4,13 +4,13 @@ import AsyncStorage from '@react-native-community/async-storage';
 //library for time/date/...
 import Moment from 'moment';
 //vasern db
-import {ToDoDB} from "db_vasern";
+import VasernDB, {GroupDB, RecurrenceDB, ToDoDB} from "db_vasern";
 //where screens get loaded
 import Main from './src';
 //redux
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
-import { setRefreshAllToDos } from './src/redux/actions';
+import {refreshAllLists} from "./src/redux/actions";
 //interfaces 
 import {ToDoI} from "res";
 
@@ -20,19 +20,25 @@ const FORMAT = 'DD-MM-YYYY';
 interface StateI {
   calculationsMade: boolean,
   latestDate: string,
-  intervalId?: NodeJS.Timeout
+  intervalId?: NodeJS.Timeout,
+  loadedData: boolean
 }
 
 class App extends React.Component<{}, StateI> {
   state = {
     latestDate: Moment().format(FORMAT),
     calculationsMade: false,
-    intervalId: setInterval(() => null, 60000)
+    intervalId: setInterval(() => null, 60000),
+    loadedData: false
   };
 
   componentDidMount() {
     //this.makeCalculations();
-    console.log(ToDoDB.data());
+    //first call on db and set to-dos
+    VasernDB.onLoaded(() => {
+      store.dispatch(refreshAllLists());
+      this.setState({loadedData: true})
+    })
   }
 
   componentWillUnmount() {
@@ -97,7 +103,7 @@ class App extends React.Component<{}, StateI> {
   render() {
     return (
       <Provider store={store}>
-        {<Main />}
+        {this.state.loadedData && <Main />}
       </Provider>
     );
   }

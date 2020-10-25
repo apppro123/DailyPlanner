@@ -1,7 +1,7 @@
 import React from 'react';
-import { FlatList, StyleSheet, FlatListProps } from 'react-native';
+import { SectionList, StyleSheet, SectionListProps } from 'react-native';
 //own components
-import { OwnView } from '../basicC';
+import { OwnText, OwnView } from '../basicC';
 
 function keyExtractor<T>(item: T, index: number): string { return index.toString() };
 
@@ -9,12 +9,17 @@ const renderItemSeperator = () => {
   return <OwnView style={styles.itemSeparatorComponent} />;
 };
 
-export function OverviewList<T>(props: FlatListProps<T>) {
-  const { data, renderItem, extraData, onRefresh, refreshing } = props;
+const renderSectionHeader = ({section}) => (
+  <OwnText text={section.title}/>
+)
+
+export function OverviewSectionList<T>(props: SectionListProps<T>) {
+  const { sections, renderItem, extraData, onRefresh, refreshing } = props;
   return (
-    <FlatList
+    <SectionList
+    renderSectionHeader={renderSectionHeader}
+      sections={sections}
       keyExtractor={keyExtractor}
-      data={data}
       extraData={extraData}
       renderItem={renderItem}
       ItemSeparatorComponent={renderItemSeperator}

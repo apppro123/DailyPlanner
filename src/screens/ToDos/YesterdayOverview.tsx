@@ -1,7 +1,7 @@
 import React from 'react';
 import Moment from "moment";
 //own components
-import {OwnView, OverviewList, ToDoItem} from 'components';
+import {OwnView, OverviewSectionList, ToDoItem} from 'components';
 //navigation
 import { CompositeNavigationProp } from "@react-navigation/native";
 import { MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
@@ -11,12 +11,13 @@ import { BottomTabNTypes, ToDosOverviewMaterialTopTabNTypes } from "../types";
 import {connect} from 'react-redux';
 import {refreshPastList, refreshTodayList} from '../../redux/actions';
 //db
-import {updateOnlyDone, deleteToDo, updateOnlyDateTime} from 'db_realm';
+//import {updateOnlyDone, deleteToDo, updateOnlyDateTime} from 'db_realm';
 //interfaces and types
 import { ToDoI } from "res";
 import { RootStateType } from 'src/redux/reducers';
 //styles
 import {globalStyles} from '../style';
+import { ToDoDB } from 'db_vasern';
 
 //typescript for redux
 const mapStateToProps = (state: RootStateType) => {
@@ -55,7 +56,8 @@ class YesterdayOverview extends React.Component<PropsI> {
   onCheckSwitch = async (newDone: boolean, id: string, index: number /*index of item in the list*/) => {
     const {refreshPastList, ToDos} = this.props;
     //update realm
-    await updateOnlyDone(newDone, id);
+    //await updateOnlyDone(newDone, id);
+    ToDoDB.update(id, {done: newDone});
     //update redux
     let {pastToDos} = ToDos;
     let item = pastToDos[index];
@@ -65,7 +67,8 @@ class YesterdayOverview extends React.Component<PropsI> {
 
   deleteToDo = async (id: string, indexInList: number) => {
     //delete in db
-    await deleteToDo(id);
+    //await deleteToDo(id);
+    ToDoDB.remove(id);
     //delete in redux
     const {pastToDos} = this.props.ToDos;
     pastToDos.splice(indexInList, 1);
@@ -74,9 +77,10 @@ class YesterdayOverview extends React.Component<PropsI> {
 
   postponeItem = async (indexInList: number, item: ToDoI) => {
     const { dateTime, id } = item;
-    const newDateTime = Moment(dateTime).add("days", 1).toDate();
+    const newDateTime = Moment(dateTime).add(1, "days").toDate();
     //change in db
-    updateOnlyDateTime(id, newDateTime)
+    //updateOnlyDateTime(id, newDateTime)
+    ToDoDB.update(id, {dateTime: dateTime});
     //change in redux
     const {pastToDos, todayToDos} = this.props.ToDos;
     //delete from todays list
@@ -92,8 +96,8 @@ class YesterdayOverview extends React.Component<PropsI> {
     const {refreshPastList, pastToDos} = this.props.ToDos;
     return (
       <OwnView style={globalStyles.screenContainer}>
-        <OverviewList
-          data={pastToDos}
+        <OverviewSectionList
+          sections={pastToDos}
           renderItem={this.renderYesterdayToDo}
           extraData={refreshPastList}
         />

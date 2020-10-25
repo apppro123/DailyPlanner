@@ -1,4 +1,4 @@
-//import realm
+/* //import realm
 import Realm from 'realm';
 //import schemas
 import {ToDoSchema, GroupSchema, RecurrenceSchema} from './Schemas';
@@ -26,4 +26,4 @@ if (nextSchemaIndex !== -1) {
 }
 
 //realm object so i can also acces db from other files
-export default new Realm(latestSchema);
+export default new Realm(latestSchema); */

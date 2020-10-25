@@ -12,5 +12,6 @@ import { ToDoModel, GroupModel, RecurrenceModel } from './Models';
  * Providing all the models that are imported above as Schema to the instance.
  */
 export default new Vasern({ 
-    schemas: [ToDoModel, GroupModel, RecurrenceModel]
+    schemas: [ToDoModel, GroupModel, RecurrenceModel],
+    version: 0.1
 });

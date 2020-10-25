@@ -1,4 +1,4 @@
-import Realm from 'realm';
+/* import Realm from 'realm';
 import {RECURRENCE} from '../Schemas';
 import {schemas} from '../dbOptions';
 //function to get array from realm object
@@ -31,4 +31,4 @@ export const insertNewRecurrence = (newRecurrence: RecurrenceI) =>
         });
       })
       .catch((error) => reject(error));
-    })
+    }) */
