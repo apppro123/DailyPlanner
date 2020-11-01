@@ -5,7 +5,7 @@ import { StyleSheet, Modal, ScrollView } from 'react-native';
 import { RecurrenceDB, GroupDB, ToDoDB } from "db_vasern";
 //redux
 import { connect } from 'react-redux';
-import { setRefreshAllToDos } from '../../redux/actions';
+import { refreshAllLists } from '../../redux/actions';
 //own components
 import {
   OwnView,
@@ -38,7 +38,7 @@ const mapStateToProps = (state: RootStateType) => {
   };
 };
 const mapDispatchToProps = {
-  setRefreshAllToDos
+  refreshAllLists
 }
 type PropsFromRedux = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
 
@@ -179,7 +179,7 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
       done: oldToDo.done
     } as ToDoI;
     ToDoDB.update(oldToDo.id, changedToDo);
-    this.props.setRefreshAllToDos();
+    this.props.refreshAllLists();
     this.props.navigation.goBack();
   };
 
@@ -403,5 +403,5 @@ const styles = StyleSheet.create({
 
 export default connect(
   mapStateToProps,
-  { setRefreshAllToDos },
+  mapDispatchToProps
 )(ChangeToDo);

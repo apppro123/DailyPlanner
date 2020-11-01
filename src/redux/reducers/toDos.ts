@@ -37,7 +37,6 @@ const initialState: ToDoReduxStateI = {
 
 export default (state = initialState, action: {payload: any, type: string}) => {
   const {payload, type} = action;
-  console.log("reducer");
   switch (type) {
     //refresh and set lists
     case REFRESH_DAILY_LIST:
@@ -45,7 +44,6 @@ export default (state = initialState, action: {payload: any, type: string}) => {
     case REFRESH_PAST_LIST:
       return {...state, refreshPastList: !state.refreshPastList, pastToDos: payload};
     case REFRESH_TODAY_LIST:
-      console.log("REFRESH_TODAY_LIST")
       return {...state, refreshTodayList: !state.refreshTodayList, todayToDos: payload};
     case REFRESH_FUTURE_LIST:
       return {...state, refreshFutureList: !state.refreshFutureList, futureToDos: payload};

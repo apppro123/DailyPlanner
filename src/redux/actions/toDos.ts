@@ -42,13 +42,12 @@ export const refreshPastList = (optionalToDos?: ToDoI[]) => {
 };
 
 export const refreshTodayList = (optionalToDos?: ToDoI[]) => {
-  /* if (optionalToDos) {
+  if (optionalToDos) {
     return {
       type: REFRESH_TODAY_LIST,
       payload: optionalToDos,
     };
-  } */
-  console.log("refreshTodayList")
+  }
   let toDos = ToDoDB.data() as ToDoI[];
   let sortedToDos = toDos.filter((toDo) =>
     Moment(toDo.dateTime).isSame(Moment(), 'day'),
