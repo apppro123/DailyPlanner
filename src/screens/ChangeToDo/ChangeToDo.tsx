@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Modal, ScrollView } from 'react-native';
 //db
 //import { updateToDo, getAllGroups, deleteRecurrence, insertNewRecurrence } from 'db_realm';
-import {RecurrenceDB, GroupDB, ToDoDB} from "db_vasern";
+import { RecurrenceDB, GroupDB, ToDoDB } from "db_vasern";
 //redux
 import { connect } from 'react-redux';
 import { setRefreshAllToDos } from '../../redux/actions';
@@ -68,6 +68,7 @@ interface StateI {
 
 class ChangeToDo extends React.Component<PropsI, StateI> {
   removeFocusListener: any;
+  removeBlurListener: any;
 
   constructor(props: PropsI) {
     super(props);
@@ -102,6 +103,10 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
       ),
     });
     this.removeFocusListener = props.navigation.addListener('focus', this.changeAfterFocus);
+    this.removeBlurListener = props.navigation.addListener(
+      "blur",
+      this.resetState
+    );
   }
 
   async componentDidMount() {
@@ -114,6 +119,20 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
 
   componentWillUnmount() {
     this.removeFocusListener();
+    this.removeBlurListener();
+  }
+
+  resetState = () => {
+    this.setState({
+      name: "",
+      notes: "",
+      dateTime: Moment(),
+      groups: [] as GroupI[],
+      allRemainingGroups: [] as GroupI[],
+      datePickerVisible: false,
+      timePickerVisible: false,
+      groupsModalVisible: false
+    })
   }
 
   //change to-do
@@ -137,7 +156,7 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
       //if old recurrence was not set
       if (daily) {
         //now it has recurence
-        changedRecurrence = {recurrenceRule: "daily"}
+        changedRecurrence = { recurrenceRule: "daily" }
       }
     } else {
       //recurrence was set
@@ -160,8 +179,10 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
       done: oldToDo.done
     } as ToDoI;
     ToDoDB.update(oldToDo.id, changedToDo);
-    //this.props.setRefreshAllToDos(allToDos);
-    this.props.navigation.goBack();
+    ToDoDB.onChange(() => {
+      this.props.setRefreshAllToDos();
+      this.props.navigation.goBack();
+    })
   };
 
   //change inputs
@@ -183,7 +204,7 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
   onDatePress = () => this.setState({ datePickerVisible: true });
   onDateConfirm = (datetime: Date) => {
     const momentDatetime = Moment(datetime);
-    if (momentDatetime.isAfter(Moment())) {
+    if (momentDatetime.isAfter(Moment().startOf("day"))) {
       this.setState({
         dateTime: momentDatetime,
         datePickerVisible: false,

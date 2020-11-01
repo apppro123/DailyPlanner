@@ -62,7 +62,7 @@ class YesterdayOverview extends React.Component<PropsI> {
     let {pastToDos} = ToDos;
     let item = pastToDos[index];
     item.done = newDone;
-    refreshPastList();
+    refreshPastList(pastToDos);
   };
 
   deleteToDo = async (id: string, indexInList: number) => {
@@ -72,7 +72,7 @@ class YesterdayOverview extends React.Component<PropsI> {
     //delete in redux
     const {pastToDos} = this.props.ToDos;
     pastToDos.splice(indexInList, 1);
-    this.props.refreshPastList();
+    this.props.refreshPastList(pastToDos);
   };
 
   postponeItem = async (indexInList: number, item: ToDoI) => {
@@ -85,11 +85,11 @@ class YesterdayOverview extends React.Component<PropsI> {
     const {pastToDos, todayToDos} = this.props.ToDos;
     //delete from todays list
     pastToDos.splice(indexInList, 1);
-    this.props.refreshPastList();
+    this.props.refreshPastList(pastToDos);
     //add to future list with new date
     item.dateTime = newDateTime;
     todayToDos.push(item);
-    this.props.refreshTodayList();
+    this.props.refreshTodayList(todayToDos);
   };
 
   render() {

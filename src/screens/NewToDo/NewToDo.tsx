@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Modal, ScrollView } from 'react-native';
 import Moment from "moment";
 //vasern db
-import {ToDoDB, GroupDB} from "db_vasern";
+import { ToDoDB, GroupDB } from "db_vasern";
 //import { insertNewToDo, getAllGroups, insertNewRecurrence } from 'db_realm';
 //redux
 import { connect } from 'react-redux';
@@ -140,7 +140,11 @@ class NewToDo extends React.Component<PropsI, StateI> {
       name: "",
       notes: "",
       dateTime: Moment(),
-      groups: []
+      groups: [] as GroupI[],
+      allRemainingGroups: [] as GroupI[],
+      datePickerVisible: false,
+      timePickerVisible: false,
+      groupsModalVisible: false
     })
   }
 
@@ -202,10 +206,10 @@ class NewToDo extends React.Component<PropsI, StateI> {
       recurrence: undefined as RecurrenceI | undefined
     };
     if (daily) {
-      newToDo.recurrence = {recurrenceRule: "daily"};
+      newToDo.recurrence = { recurrenceRule: "daily" };
     }
     let insertedTodo = ToDoDB.insert(newToDo);
-    const {refreshTodayList, refreshFutureList, refreshDailyList} = this.props;
+    const { refreshTodayList, refreshFutureList, refreshDailyList } = this.props;
     ToDoDB.onInsert(() => {
       if (daily) {
         //refresh lists
@@ -222,8 +226,8 @@ class NewToDo extends React.Component<PropsI, StateI> {
         //today to-dos
         refreshTodayList();
       }
+      this.props.navigation.goBack();
     })
-    this.props.navigation.goBack();
   };
 
   //change inputs
@@ -244,7 +248,7 @@ class NewToDo extends React.Component<PropsI, StateI> {
   onDatePress = () => this.setState({ datePickerVisible: true });
   onDateConfirm = (datetime: Date) => {
     const momentDatetime = Moment(datetime);
-    if (momentDatetime.isAfter(Moment())) {
+    if (momentDatetime.isAfter(Moment().startOf("day"))) {
       this.setState({
         dateTime: momentDatetime,
         datePickerVisible: false,

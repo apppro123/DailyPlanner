@@ -21,7 +21,6 @@ import { RootStateType } from 'src/redux/reducers';
 //styles
 import { globalStyles } from '../style';
 import { ToDoDB } from 'db_vasern';
-import { RefreshControl } from 'react-native';
 
 //typescript for redux
 const mapStateToProps = (state: RootStateType) => {
@@ -62,12 +61,12 @@ class TodayOverview extends React.Component<PropsI> {
     const { refreshTodayList, ToDos } = this.props;
     //update realm
     //await updateOnlyDone(newDone, id);
-    ToDoDB.update(id, {done: newDone});
+    ToDoDB.update(id, { done: newDone });
     //update redux
     let { todayToDos } = ToDos;
     let item = todayToDos[index] as ToDoI;
     item.done = newDone;
-    refreshTodayList();
+    refreshTodayList(todayToDos);
   };
 
   deleteToDo = async (id: string, indexInList: number) => {
@@ -76,7 +75,7 @@ class TodayOverview extends React.Component<PropsI> {
     //delete in redux
     const { todayToDos } = this.props.ToDos;
     todayToDos.splice(indexInList, 1);
-    this.props.refreshTodayList();
+    this.props.refreshTodayList(todayToDos);
   };
 
   postponeItem = async (indexInList: number, item: ToDoI) => {
@@ -84,7 +83,7 @@ class TodayOverview extends React.Component<PropsI> {
     const newDateTime = Moment(dateTime).add(1, "days").toDate();
     //change date in db
     //updateOnlyDateTime(id, newDateTime);
-    ToDoDB.update(id, {dateTime: dateTime});
+    ToDoDB.update(id, { dateTime: dateTime });
     //change in redux
     const { todayToDos, futureToDos } = this.props.ToDos;
     //delete from todays list
@@ -93,7 +92,7 @@ class TodayOverview extends React.Component<PropsI> {
     //add to future list with new date
     item.dateTime = newDateTime;
     futureToDos.push(item);
-    this.props.refreshFutureList();
+    this.props.refreshFutureList(futureToDos);
   };
 
   render() {

@@ -64,7 +64,7 @@ class TomorrowOverview extends React.Component<PropsI> {
     let {futureToDos} = ToDos;
     let item = futureToDos[index];
     item.done = newDone;
-    refreshFutureList();
+    refreshFutureList(futureToDos);
   };
 
   deleteToDo = async (id: string, indexInList: number) => {
@@ -74,7 +74,7 @@ class TomorrowOverview extends React.Component<PropsI> {
     //delete in redux
     const {futureToDos} = this.props.ToDos;
     futureToDos.splice(indexInList, 1);
-    this.props.refreshFutureList();
+    this.props.refreshFutureList(futureToDos);
   };
 
   render() {
