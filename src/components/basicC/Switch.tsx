@@ -25,7 +25,7 @@ const OwnSwitch = ({ onValueChange, value, style, text }: OwnSwitchProps) => {
 
 const styles = StyleSheet.create({
     container: {
-        widht: "100%",
+        width: "100%",
         padding: 5,
         flexDirection: "row",
         alignItems: "center",

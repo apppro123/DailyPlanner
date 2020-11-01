@@ -14,7 +14,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { BottomTabNTypes, DailyToDosOverviewStackNTypes } from "../types";
 //realm
-import {getAllToDos, deleteToDo} from 'db_realm';
+//import {getAllToDos, deleteToDo} from 'db_realm';
 //redux
 import {connect} from 'react-redux';
 import {setRefreshAllToDos} from '../../redux/actions';
@@ -23,6 +23,7 @@ import { ToDoI } from "res";
 import { RootStateType } from 'src/redux/reducers';
 //styles
 import {globalStyles} from '../style';
+import { ToDoDB } from 'db_vasern';
 
 //typescript for redux
 const mapStateToProps = (state: RootStateType) => {
@@ -103,9 +104,9 @@ class DailyToDosOverview extends React.Component<PropsI, StateI> {
   onDeleteDailyToDo = async () => {
     const idToDelete = this.state.idToDelete;
     //delete daily to-do
-    await deleteToDo(idToDelete)
-    const allToDos = await getAllToDos();
-    this.props.setRefreshAllToDos(allToDos);
+    ToDoDB.remove(idToDelete);
+    //const allToDos = await getAllToDos();
+    //this.props.setRefreshAllToDos(allToDos);
     this.setState({deleteModalVisible: false});
     
   }; 

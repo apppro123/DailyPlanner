@@ -1,6 +1,4 @@
-import Moment from "moment";
-
-import Realm from 'realm';
+/* import Moment from "moment";
 import {TODO} from '../Schemas';
 import {schemas} from '../dbOptions';
 //interfaces
@@ -13,13 +11,15 @@ export const insertNewToDo = (newToDo: ToDoI) =>
     Realm.open(latestSchema)
       .then((realm) => {
         realm.write(() => {
-          let {dateTime, recurrence} = newToDo;
-          if(recurrence){
-            //at the moment it just can be daily so odnt have to test recurrenceRule yet
+          let {dateTime, recurrenceId} = newToDo;
+          if(recurrenceId){
+            //at the moment it just can be daily so dont have to test recurrenceRule yet
             for(let i=0; i<10; i++){
               dateTime = Moment(dateTime).add(1, "days").toDate();
               realm.create(TODO, newToDo);
             }
+          }else{
+            realm.create(TODO, newToDo);
           }
           resolve();
         });
@@ -32,14 +32,14 @@ export const updateToDo = (newToDo: ToDoI) =>
     Realm.open(latestSchema)
       .then((realm) => {
         realm.write(() => {
-          const {name, notes, done, recurrence} = newToDo;
+          const {name, notes, done} = newToDo;
           let updatingToDo = realm.objectForPrimaryKey(
             TODO,
             newToDo.id,
           ) as ToDoI;
           updatingToDo.name = name;
           updatingToDo.notes = notes;
-          updatingToDo.recurrence = recurrence;
+          //updatingToDo.recurrence = recurrence;
           updatingToDo.done = done;
           //get and return all to-dos
           const allToDos = realm.objects<ToDoI>(TODO);
@@ -57,6 +57,7 @@ export const updateOnlyDone = (done: boolean, id: string) =>
         realm.write(() => {
           let updatingToDo = realm.objectForPrimaryKey(TODO, id) as ToDoI;
           updatingToDo.done = done;
+          resolve();
         });
       })
       .catch((error) => reject(error));
@@ -109,7 +110,7 @@ export const getAllToDos = () =>
       .catch((error) => reject(error));
   });
 
-/* export const getAllDaysDone = () =>
+export const getAllDaysDone = () =>
   new Promise<DaysDoneI[]>((resolve, reject) => {
     Realm.open(latestSchema)
       .then(realm => {
@@ -117,7 +118,7 @@ export const getAllToDos = () =>
         resolve(Array.from(allDaysDone));
       })
       .catch(error => reject(error));
-  }); */
+  });
 
 //delete daily to-do and maybe make new ones for the selected days
 export const deleteDailyToDo = (idToDelete: string, newToDos: ToDoI[]) =>
@@ -148,7 +149,7 @@ export const updateAfterDateChanged = () =>
           let allToDos = realm.objects<ToDoI>(TODO);
           //ids to  delete
           allToDos.map((toDo: ToDoI) => {
-            if (toDo.daily) {
+            if (toDo.recurrenceId) {
               toDo.done = false;
             }
           });
@@ -172,3 +173,4 @@ export function realmObjectToArray<T>(
   }
   return realmArray;
 }
+ */

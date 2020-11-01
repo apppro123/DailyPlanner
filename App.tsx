@@ -3,14 +3,14 @@ import { View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 //library for time/date/...
 import Moment from 'moment';
-//realm db
-import { updateAfterDateChanged, getAllToDos } from 'db_realm';
+//vasern db
+import VasernDB, {GroupDB, RecurrenceDB, ToDoDB} from "db_vasern";
 //where screens get loaded
 import Main from './src';
 //redux
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
-import { setRefreshAllToDos } from './src/redux/actions';
+import {refreshAllLists} from "./src/redux/actions";
 //interfaces 
 import {ToDoI} from "res";
 
@@ -20,25 +20,33 @@ const FORMAT = 'DD-MM-YYYY';
 interface StateI {
   calculationsMade: boolean,
   latestDate: string,
-  intervalId?: NodeJS.Timeout
+  intervalId?: NodeJS.Timeout,
+  loadedData: boolean
 }
 
 class App extends React.Component<{}, StateI> {
   state = {
     latestDate: Moment().format(FORMAT),
     calculationsMade: false,
-    intervalId: setInterval(() => null, 60000)
+    intervalId: setInterval(() => null, 60000),
+    loadedData: false
   };
 
   componentDidMount() {
-    this.makeCalculations();
+    //this.makeCalculations();
+    //first call on db and set to-dos
+    VasernDB.onLoaded(() => {
+      store.dispatch(refreshAllLists());
+      this.setState({loadedData: true})
+    })
   }
 
   componentWillUnmount() {
     clearInterval(this.state.intervalId);
   }
 
-  makeCalculations = async () => {
+  /* look if date changed and refresh ToDos if necessary */
+  /* makeCalculations = async () => {
     const LATEST_DATE = 'latestDate';
     try {
       //get last saved date
@@ -76,9 +84,9 @@ class App extends React.Component<{}, StateI> {
       alert('Sorry, an error occured!');
       this.setState({ calculationsMade: true });
     }
-  };
+  }; */
 
-  checkDateChanged = async () => {
+  /* checkDateChanged = async () => {
     const LATEST_DATE = 'latestDate';
     //get latest date from state
     const latestDate = Moment(this.state.latestDate, FORMAT);
@@ -90,12 +98,12 @@ class App extends React.Component<{}, StateI> {
       await AsyncStorage.setItem(LATEST_DATE, newLatestDate);
       this.state.latestDate = newLatestDate;
     }
-  };
+  }; */
 
   render() {
     return (
       <Provider store={store}>
-        {<Main />}
+        {this.state.loadedData && <Main />}
       </Provider>
     );
   }

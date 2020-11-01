@@ -1,10 +1,9 @@
 import React from 'react';
 import { StyleSheet, Modal, ScrollView } from 'react-native';
 import Moment from "moment";
-//db
-import { insertNewToDo, getAllGroups } from 'db_realm';
-//uuid generator
-import UUIDGenerator from 'react-native-uuid-generator';
+//vasern db
+import { ToDoDB, GroupDB } from "db_vasern";
+//import { insertNewToDo, getAllGroups, insertNewRecurrence } from 'db_realm';
 //redux
 import { connect } from 'react-redux';
 import { refreshDailyList, refreshPastList, refreshTodayList, refreshFutureList } from "../../redux/actions";
@@ -25,7 +24,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { BottomTabNTypes, NewToDoStackNTypes } from "../types";
 //strings, interfaces, types
-import { Strings, GroupI, SettingStrings, ToDoStrings, ToDoI } from 'res';
+import { Strings, GroupI, SettingStrings, ToDoStrings, RecurrenceI } from 'res';
 const { NAME, NOTES, ADD, DAILY } = Strings;
 const { GROUPS } = SettingStrings;
 const { PLS_SELECT_TIME_AFTER_NOW } = ToDoStrings;
@@ -124,7 +123,7 @@ class NewToDo extends React.Component<PropsI, StateI> {
     );
 
     //set all groups
-    let allRemainingGroups = await getAllGroups();
+    let allRemainingGroups = GroupDB.data();
     this.setState({
       daily,
       allRemainingGroups
@@ -141,7 +140,11 @@ class NewToDo extends React.Component<PropsI, StateI> {
       name: "",
       notes: "",
       dateTime: Moment(),
-      groups: []
+      groups: [] as GroupI[],
+      allRemainingGroups: [] as GroupI[],
+      datePickerVisible: false,
+      timePickerVisible: false,
+      groupsModalVisible: false
     })
   }
 
@@ -155,7 +158,7 @@ class NewToDo extends React.Component<PropsI, StateI> {
       daily = this.checkDaily(history);
     }
     //get all groups
-    let allRemainingGroups = await getAllGroups();
+    let allRemainingGroups = GroupDB.data();
 
     this.setState({
       daily: daily,
@@ -194,51 +197,37 @@ class NewToDo extends React.Component<PropsI, StateI> {
   //add new to do
   addToDo = async () => {
     const { name, notes, daily, dateTime, groups } = this.state;
-    const toDoUuid = await UUIDGenerator.getRandomUUID();
-    let newToDo: ToDoI = {
-      id: toDoUuid,
+    let newToDo = {
       name: name.trim(),
       notes: notes.trim(),
       groups: groups,
       dateTime: dateTime.toDate(),
       done: false,
+      recurrence: undefined as RecurrenceI | undefined
     };
     if (daily) {
-      const recurrenceUuid = await UUIDGenerator.getRandomUUID();
-      newToDo.recurrence = { id: recurrenceUuid, recurrenceRule: "daily" };
+      newToDo.recurrence = { recurrenceRule: "daily" };
     }
-    await insertNewToDo(newToDo);
-
-    if (daily) {
-      //refresh today, all-day and future list
-
-    }
-    //inset into redux state
-    const { refreshPastList, refreshTodayList, refreshFutureList, refreshDailyList, ToDos } = this.props;
-    const { dailyToDos, pastToDos, todayToDos, futureToDos } = ToDos;
-    if (daily) {
-      //add to-do to daily and today to-dos
-      futureToDos.push(newToDo);
-      dailyToDos.push(newToDo);
-      todayToDos.push(newToDo);
-      //refresh lists
-      refreshTodayList();
-      refreshFutureList();
-      refreshDailyList();
-    } else if (dateTime.isBefore(Moment().startOf("day"))) {
-      //past to-dos
-      pastToDos.push(newToDo);
-      refreshPastList()
-    } else if (dateTime.isAfter(Moment().endOf("day"))) {
-      //future to-dos
-      futureToDos.push(newToDo);
-      refreshFutureList();
-    } else {
-      //today to-dos
-      todayToDos.push(newToDo);
-      refreshTodayList();
-    }
-    this.props.navigation.goBack();
+    let insertedTodo = ToDoDB.insert(newToDo);
+    const { refreshTodayList, refreshFutureList, refreshDailyList } = this.props;
+    ToDoDB.onInsert(() => {
+      if (daily) {
+        //refresh lists
+        refreshTodayList();
+        refreshFutureList();
+        refreshDailyList();
+      } else if (dateTime.isBefore(Moment().startOf("day"))) {
+        //past to-dos
+        refreshPastList()
+      } else if (dateTime.isAfter(Moment().endOf("day"))) {
+        //future to-dos
+        refreshFutureList();
+      } else {
+        //today to-dos
+        refreshTodayList();
+      }
+      this.props.navigation.goBack();
+    })
   };
 
   //change inputs
@@ -259,7 +248,7 @@ class NewToDo extends React.Component<PropsI, StateI> {
   onDatePress = () => this.setState({ datePickerVisible: true });
   onDateConfirm = (datetime: Date) => {
     const momentDatetime = Moment(datetime);
-    if (momentDatetime.isAfter(Moment())) {
+    if (momentDatetime.isAfter(Moment().startOf("day"))) {
       this.setState({
         dateTime: momentDatetime,
         datePickerVisible: false,
@@ -287,8 +276,18 @@ class NewToDo extends React.Component<PropsI, StateI> {
 
   //adding/showing a group
   onPlusGroupPress = () => {
+    if (this.state.allRemainingGroups.length > 0) {
+      this.setState({
+        groupsModalVisible: true
+      })
+    } else {
+      alert("No Groups left.")
+    }
+  }
+
+  closeGroupModal = () => {
     this.setState({
-      groupsModalVisible: true
+      groupsModalVisible: false
     })
   }
 
@@ -376,6 +375,9 @@ class NewToDo extends React.Component<PropsI, StateI> {
           <Modal visible={groupsModalVisible} transparent={true}>
             <OwnView style={styles.groupsModalContainer}>
               <OwnView style={styles.groupsModalInnerContainer}>
+                <OwnButton style={styles.cancelModalButton} onPress={this.closeGroupModal}>
+                  <OwnIcon iconSet="MaterialCommunity" name="close" size={35} />
+                </OwnButton>
                 {
                   allRemainingGroups.map((group, index) => <OwnButton key={index} text={group.name} textStyle={styles.groupsModalName} onPress={() => this.addGroup(group)} />)
                 }
@@ -437,6 +439,11 @@ const styles = StyleSheet.create({
   groupsModalName: {
     fontSize: 25,
     padding: 3
+  },
+  cancelModalButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
   }
 });
 

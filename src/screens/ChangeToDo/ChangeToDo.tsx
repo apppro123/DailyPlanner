@@ -1,9 +1,8 @@
 import React from 'react';
 import { StyleSheet, Modal, ScrollView } from 'react-native';
 //db
-import { updateToDo, getAllGroups } from 'db_realm';
-//uuid generator
-import UUIDGenerator from 'react-native-uuid-generator';
+//import { updateToDo, getAllGroups, deleteRecurrence, insertNewRecurrence } from 'db_realm';
+import { RecurrenceDB, GroupDB, ToDoDB } from "db_vasern";
 //redux
 import { connect } from 'react-redux';
 import { setRefreshAllToDos } from '../../redux/actions';
@@ -69,6 +68,7 @@ interface StateI {
 
 class ChangeToDo extends React.Component<PropsI, StateI> {
   removeFocusListener: any;
+  removeBlurListener: any;
 
   constructor(props: PropsI) {
     super(props);
@@ -103,11 +103,15 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
       ),
     });
     this.removeFocusListener = props.navigation.addListener('focus', this.changeAfterFocus);
+    this.removeBlurListener = props.navigation.addListener(
+      "blur",
+      this.resetState
+    );
   }
 
   async componentDidMount() {
     //set all groups
-    let allRemainingGroups = await getAllGroups();
+    let allRemainingGroups = GroupDB.data();
     this.setState({
       allRemainingGroups: allRemainingGroups
     })
@@ -115,6 +119,20 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
 
   componentWillUnmount() {
     this.removeFocusListener();
+    this.removeBlurListener();
+  }
+
+  resetState = () => {
+    this.setState({
+      name: "",
+      notes: "",
+      dateTime: Moment(),
+      groups: [] as GroupI[],
+      allRemainingGroups: [] as GroupI[],
+      datePickerVisible: false,
+      timePickerVisible: false,
+      groupsModalVisible: false
+    })
   }
 
   //change to-do
@@ -133,34 +151,38 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
     const oldToDo = this.props.route.params.toDo;
     const { name, notes, daily, dateTime, groups } = this.state;
 
-    let changedRecurrence: RecurrenceI | null = null;
+    let changedRecurrence = oldToDo.recurrence;
     if (!oldToDo.recurrence) {
       //if old recurrence was not set
       if (daily) {
         //now it has recurence
-        const id = UUIDGenerator.getRandomUUID();
-        changedRecurrence = { id: id, recurrenceRule: "daily" }
+        changedRecurrence = { recurrenceRule: "daily" }
       }
     } else {
       //recurrence was set
-      if (daily) {
-        //recurrence is still set
-        changedRecurrence = oldToDo.recurrence;
+      if (!daily) {
+        //reccurrence is not set anymore
+
+        changedRecurrence = undefined;
       }
+      /* else{
+        no more changes than daily to check
+      } */
     }
 
     let changedToDo = {
-      id: oldToDo.id,
       name: name.trim(),
       notes: notes.trim(),
       dateTime: dateTime.toDate(),
       recurrence: changedRecurrence,
-      groups: groups,
+      //groupsIds: groups,
       done: oldToDo.done
     } as ToDoI;
-    const allToDos = await updateToDo(changedToDo);
-    this.props.setRefreshAllToDos(allToDos);
-    this.props.navigation.goBack();
+    ToDoDB.update(oldToDo.id, changedToDo);
+    ToDoDB.onChange(() => {
+      this.props.setRefreshAllToDos();
+      this.props.navigation.goBack();
+    })
   };
 
   //change inputs
@@ -182,7 +204,7 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
   onDatePress = () => this.setState({ datePickerVisible: true });
   onDateConfirm = (datetime: Date) => {
     const momentDatetime = Moment(datetime);
-    if (momentDatetime.isAfter(Moment())) {
+    if (momentDatetime.isAfter(Moment().startOf("day"))) {
       this.setState({
         dateTime: momentDatetime,
         datePickerVisible: false,
@@ -211,8 +233,17 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
 
   //adding/showing a group
   onPlusGroupPress = () => {
+    if (this.state.allRemainingGroups.length > 0) {
+      this.setState({
+        groupsModalVisible: true
+      })
+    } else {
+      alert("No Groups left.")
+    }
+  }
+  closeGroupModal = () => {
     this.setState({
-      groupsModalVisible: true
+      groupsModalVisible: false
     })
   }
 
@@ -301,6 +332,9 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
           <Modal visible={groupsModalVisible} transparent={true}>
             <OwnView style={styles.groupsModalContainer}>
               <OwnView style={styles.groupsModalInnerContainer}>
+                <OwnButton style={styles.cancelModalButton} onPress={this.closeGroupModal}>
+                  <OwnIcon iconSet="MaterialCommunity" name="close" size={35} />
+                </OwnButton>
                 {
                   allRemainingGroups.map((group, index) => <OwnButton key={index} text={group.name} textStyle={styles.groupsModalName} onPress={() => this.addGroup(group)} />)
                 }
@@ -361,6 +395,11 @@ const styles = StyleSheet.create({
   groupsModalName: {
     fontSize: 25,
     padding: 3
+  },
+  cancelModalButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
   }
 });
 

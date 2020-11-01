@@ -17,7 +17,7 @@ export interface ToDoI {
   notes: string;
   done: boolean;
   groups: GroupI[];
-  dateTime: Date,
+  dateTime?: Date,
   recurrence?: RecurrenceI
 }
 
