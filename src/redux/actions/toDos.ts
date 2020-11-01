@@ -35,6 +35,9 @@ export const refreshPastList = (optionalToDos?: ToDoI[]) => {
       insertInOrderedList(toDo, orderedPastToDos);
     }
   });
+  orderedPastToDos.sort((a, b) =>
+    Moment(b.title, 'YYYY-MM-DD').isAfter(Moment(a.title, 'YYYY-MM-DD')),
+  );
   return {
     type: REFRESH_PAST_LIST,
     payload: orderedPastToDos,
@@ -72,6 +75,9 @@ export const refreshFutureList = (optionalToDos?: ToDoI[]) => {
       insertInOrderedList(toDo, orderedFutureToDos);
     }
   });
+  orderedFutureToDos.sort((a, b) =>
+    Moment(b.title, 'YYYY-MM-DD').isBefore(Moment(a.title, 'YYYY-MM-DD')),
+  );
   return {
     type: REFRESH_FUTURE_LIST,
     payload: orderedFutureToDos,
@@ -111,10 +117,10 @@ export const refreshAllLists = () => {
   });
   //for some reason it is working so I won't touch that code anymore :)
   orderedPastToDos.sort((a, b) =>
-    Moment(b.title, 'YYYY-MM-DD').isBefore(Moment(a.title, 'YYYY-MM-DD')),
+    Moment(b.title, 'YYYY-MM-DD').isAfter(Moment(a.title, 'YYYY-MM-DD')),
   );
   orderedFutureToDos.sort((a, b) =>
-    Moment(b.title, 'YYYY-MM-DD').isAfter(Moment(a.title, 'YYYY-MM-DD')),
+    Moment(b.title, 'YYYY-MM-DD').isBefore(Moment(a.title, 'YYYY-MM-DD')),
   );
   return {
     type: REFRESH_ALL_LISTS,
