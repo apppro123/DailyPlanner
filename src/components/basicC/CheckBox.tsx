@@ -1,6 +1,5 @@
 import React from "react";
-import {StyleSheetProperties} from "react-native";
-//own componetns
+//own  components
 import OwnIcon from "./Icon";
 import OwnButton from "./Button";
 

@@ -71,13 +71,12 @@ class TomorrowOverview extends React.Component<PropsI> {
   };
 
   postponeItem = async (item: ToDoI) => {
-    const { refreshFutureList } = this.props;
     const { dateTime, id } = item;
     const newDateTime = Moment(dateTime).add(1, "days").toDate();
     //change in db
     ToDoDB.update(id, { dateTime: newDateTime });
     //change in redux => lists
-    refreshFutureList();
+    this.props.refreshFutureList();
   };
 
   render() {

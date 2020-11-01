@@ -48,6 +48,7 @@ export const refreshTodayList = (optionalToDos?: ToDoI[]) => {
       payload: optionalToDos,
     };
   } */
+  console.log("refreshTodayList")
   let toDos = ToDoDB.data() as ToDoI[];
   let sortedToDos = toDos.filter((toDo) =>
     Moment(toDo.dateTime).isSame(Moment(), 'day'),

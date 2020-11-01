@@ -57,11 +57,10 @@ class TodayOverview extends React.Component<PropsI> {
 
   //methods for list
   onCheckSwitch = async (newDone: boolean, id: string) => {
-    const { refreshTodayList } = this.props;
     //update realm
     ToDoDB.update(id, { done: newDone });
     //update redux => list
-    refreshTodayList()
+    this.props.refreshTodayList()
   };
 
   deleteToDo = async (id: string) => {
@@ -77,8 +76,8 @@ class TodayOverview extends React.Component<PropsI> {
     //change date in db
     ToDoDB.update(id, { dateTime: newDateTime });
     //change redux => lists
-    refreshFutureList();
-    refreshTodayList();
+    this.props.refreshFutureList();
+    this.props.refreshTodayList();
   };
 
   render() {
