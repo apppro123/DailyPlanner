@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
         padding: 5,
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between";
+        justifyContent: "space-between"
     },
     text: {
         fontSize: 25
