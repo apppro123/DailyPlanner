@@ -33,19 +33,19 @@ const mapDispatchToProps = {
 type PropsFromRedux = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
 
 //navigation props
-type TomorrowOverviewNavigationProps = CompositeNavigationProp<MaterialTopTabNavigationProp<ToDosOverviewMaterialTopTabNTypes, "Tomorrow">,
+type FutureOverviewNavigationProps = CompositeNavigationProp<MaterialTopTabNavigationProp<ToDosOverviewMaterialTopTabNTypes, "Future">,
   BottomTabNavigationProp<BottomTabNTypes>>;
 
 interface PropsI extends PropsFromRedux {
-  navigation: TomorrowOverviewNavigationProps,
+  navigation: FutureOverviewNavigationProps,
 }
 
 
 
-class TomorrowOverview extends React.Component<PropsI> {
-  renderTomorrowToDo = ({ item, index }: { item: ToDoI, index: number }) => {
+class FutureOverview extends React.Component<PropsI> {
+  renderFutureToDo = ({ item, index }: { item: ToDoI, index: number }) => {
     return (
-      <ToDoItem<TomorrowOverviewNavigationProps>
+      <ToDoItem<FutureOverviewNavigationProps>
         item={item}
         onCheckSwitch={this.onCheckSwitch}
         deleteToDo={this.deleteToDo}
@@ -85,7 +85,7 @@ class TomorrowOverview extends React.Component<PropsI> {
       <OwnView style={globalStyles.screenContainer}>
         <OverviewSectionList
           sections={futureToDos}
-          renderItem={this.renderTomorrowToDo}
+          renderItem={this.renderFutureToDo}
           extraData={refreshFutureList}
         />
       </OwnView>
@@ -96,4 +96,4 @@ class TomorrowOverview extends React.Component<PropsI> {
 
 export default connect(mapStateToProps, {
   refreshFutureList,
-})(TomorrowOverview);
+})(FutureOverview);

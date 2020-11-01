@@ -10,9 +10,9 @@ export type BottomTabNTypes = {
 }
 
 export type ToDosOverviewMaterialTopTabNTypes = {
-    Yesterday: undefined,
+    Past: undefined,
     Today: undefined,
-    Tomorrow: undefined,
+    Future: undefined,
 }
 
 export type ChangeTodoStackNTypes = {

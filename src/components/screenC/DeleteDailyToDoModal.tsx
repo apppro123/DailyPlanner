@@ -5,11 +5,11 @@ import { OwnText, OwnCheckBox, OwnButton, OwnView } from '../basicC';
 //strings
 import { ToDoStrings, ToDosOverviewStrings, Strings } from 'res';
 const { CHOOSE_DAYS_KEEP_TODO } = ToDoStrings;
-const { YESTERDAY, TODAY, TOMORROW } = ToDosOverviewStrings;
+const { PAST, TODAY, FUTURE } = ToDosOverviewStrings;
 const { CANCEL } = Strings;
 
 //define days
-const days = [YESTERDAY, TODAY, TOMORROW];
+const days = [PAST, TODAY, FUTURE];
 
 interface PropsI {
   visible: boolean,

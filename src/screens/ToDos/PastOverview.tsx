@@ -31,7 +31,7 @@ const mapDispatchToProps = {
 type PropsFromRedux = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
 
 //navigation props
-type YesterdayOverviewNavigationProps = CompositeNavigationProp<MaterialTopTabNavigationProp<ToDosOverviewMaterialTopTabNTypes, "Tomorrow">,
+type YesterdayOverviewNavigationProps = CompositeNavigationProp<MaterialTopTabNavigationProp<ToDosOverviewMaterialTopTabNTypes, "Future">,
   BottomTabNavigationProp<BottomTabNTypes>>;
 
 interface PropsI extends PropsFromRedux {

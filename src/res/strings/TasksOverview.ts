@@ -3,14 +3,14 @@ import LocalizedStrings from 'react-native-localization';
 export const ToDosOverviewStrings = new LocalizedStrings({
     en: {
         TODOS: "to-do",
-        YESTERDAY: "yesterday",
+        PAST: "past",
         TODAY: "today",
-        TOMORROW: "tomorrow"
+        FUTURE: "future"
     },
     de: {
         TODOS: "To-dos",
-        YESTERDAY: "gestern",
+        PAST: "Vergangenheit",
         TODAY: "heute",
-        TOMORROW: "morgen"
+        FUTURE: "Zukunft"
     }
 });

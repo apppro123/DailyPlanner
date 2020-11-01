@@ -4,10 +4,10 @@ import {StyleSheet} from 'react-native';
 import {OwnView, OwnButton} from '../basicC';
 //strings
 import {ToDosOverviewStrings} from 'res';
-const {YESTERDAY, TODAY, TOMORROW} = ToDosOverviewStrings;
+const {PAST, TODAY, FUTURE} = ToDosOverviewStrings;
 
 //define days
-const days = [YESTERDAY, TODAY, TOMORROW];
+const days = [PAST, TODAY, FUTURE];
 
 interface PropsI {
   selectedDayIndex: number,

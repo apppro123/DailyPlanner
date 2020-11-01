@@ -4,27 +4,27 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 //types
 import { ToDosOverviewMaterialTopTabNTypes } from "../types";
 //screens
-import YesterdayOverview from './YesterdayOverview';
+import PastOverview from './PastOverview';
 import TodayOverview from './TodayOverview';
-import TomorrowOverview from './TomorrowOverview';
+import FutureOverview from './FutureOverview';
 //strings
 import { ToDosOverviewStrings } from 'res';
-const { YESTERDAY, TODAY, TOMORROW } = ToDosOverviewStrings;
+const { PAST, TODAY, FUTURE } = ToDosOverviewStrings;
 
 const Tab = createMaterialTopTabNavigator<ToDosOverviewMaterialTopTabNTypes>();
 
 export const ToDosOverviewN = () => (
   <Tab.Navigator initialRouteName={'Today'}>
     <Tab.Screen
-      name="Yesterday"
-      options={{tabBarLabel: YESTERDAY}}
-      component={YesterdayOverview}
+      name="Past"
+      options={{tabBarLabel: PAST}}
+      component={PastOverview}
     />
     <Tab.Screen name="Today" options={{tabBarLabel: TODAY}} component={TodayOverview} />
     <Tab.Screen
-      name="Tomorrow"
-      options={{tabBarLabel: TOMORROW}}
-      component={TomorrowOverview}
+      name="Future"
+      options={{tabBarLabel: FUTURE}}
+      component={FutureOverview}
     />
   </Tab.Navigator>
 );
