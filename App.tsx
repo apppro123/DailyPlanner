@@ -1,18 +1,14 @@
 import React from 'react';
-import { View } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
 //library for time/date/...
 import Moment from 'moment';
 //vasern db
-import VasernDB, {GroupDB, RecurrenceDB, ToDoDB} from "db_vasern";
+import VasernDB from "db_vasern";
 //where screens get loaded
 import Main from './src';
 //redux
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
 import {refreshAllLists} from "./src/redux/actions";
-//interfaces 
-import {ToDoI} from "res";
 
 //format for moment
 const FORMAT = 'DD-MM-YYYY';
