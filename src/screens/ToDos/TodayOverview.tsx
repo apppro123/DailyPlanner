@@ -47,7 +47,6 @@ class TodayOverview extends React.Component<PropsI> {
     return (
       <ToDoItem<TodayOverviewNavigationProps>
         item={item}
-        index={index} //index of item in the array
         onCheckSwitch={this.onCheckSwitch}
         deleteToDo={this.deleteToDo}
         postponeItem={this.postponeItem}
@@ -57,42 +56,29 @@ class TodayOverview extends React.Component<PropsI> {
   };
 
   //methods for list
-  onCheckSwitch = async (newDone: boolean, id: string, index: number /*index of item in the list*/) => {
-    const { refreshTodayList, ToDos } = this.props;
+  onCheckSwitch = async (newDone: boolean, id: string) => {
+    const { refreshTodayList } = this.props;
     //update realm
-    //await updateOnlyDone(newDone, id);
     ToDoDB.update(id, { done: newDone });
-    //update redux
-    let { todayToDos } = ToDos;
-    let item = todayToDos[index] as ToDoI;
-    item.done = newDone;
-    refreshTodayList(todayToDos);
+    //update redux => list
+    refreshTodayList()
   };
 
-  deleteToDo = async (id: string, indexInList: number) => {
+  deleteToDo = async (id: string) => {
     //delete in db
     ToDoDB.remove(id);
-    //delete in redux
-    const { todayToDos } = this.props.ToDos;
-    todayToDos.splice(indexInList, 1);
-    this.props.refreshTodayList(todayToDos);
+    //update redux => list
+    this.props.refreshTodayList()
   };
 
-  postponeItem = async (indexInList: number, item: ToDoI) => {
+  postponeItem = async (item: ToDoI) => {
     const { dateTime, id } = item;
     const newDateTime = Moment(dateTime).add(1, "days").toDate();
     //change date in db
-    //updateOnlyDateTime(id, newDateTime);
-    ToDoDB.update(id, { dateTime: dateTime });
-    //change in redux
-    const { todayToDos, futureToDos } = this.props.ToDos;
-    //delete from todays list
-    todayToDos.splice(indexInList, 1);
-    this.props.refreshTodayList();
-    //add to future list with new date
-    item.dateTime = newDateTime;
-    futureToDos.push(item);
-    this.props.refreshFutureList(futureToDos);
+    ToDoDB.update(id, { dateTime: newDateTime });
+    //change redux => lists
+    refreshFutureList();
+    refreshTodayList();
   };
 
   render() {

@@ -208,7 +208,7 @@ class NewToDo extends React.Component<PropsI, StateI> {
     if (daily) {
       newToDo.recurrence = { recurrenceRule: "daily" };
     }
-    let insertedTodo = ToDoDB.insert(newToDo);
+    ToDoDB.insert(newToDo);
     const { refreshTodayList, refreshFutureList, refreshDailyList } = this.props;
     ToDoDB.onInsert(() => {
       if (daily) {

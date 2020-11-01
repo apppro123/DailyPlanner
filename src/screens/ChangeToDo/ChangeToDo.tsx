@@ -179,10 +179,8 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
       done: oldToDo.done
     } as ToDoI;
     ToDoDB.update(oldToDo.id, changedToDo);
-    ToDoDB.onChange(() => {
-      this.props.setRefreshAllToDos();
-      this.props.navigation.goBack();
-    })
+    this.props.setRefreshAllToDos();
+    this.props.navigation.goBack();
   };
 
   //change inputs

@@ -22,6 +22,12 @@ export const refreshDailyList = () => {
 };
 
 export const refreshPastList = (optionalToDos?: ToDoI[]) => {
+  if (optionalToDos) {
+    return {
+      type: REFRESH_PAST_LIST,
+      payload: optionalToDos,
+    };
+  }
   let toDos = ToDoDB.data() as ToDoI[];
   let orderedPastToDos = [] as {title: string; data: ToDoI[]}[];
   toDos.map((toDo) => {
@@ -36,9 +42,16 @@ export const refreshPastList = (optionalToDos?: ToDoI[]) => {
 };
 
 export const refreshTodayList = (optionalToDos?: ToDoI[]) => {
+  /* if (optionalToDos) {
+    return {
+      type: REFRESH_TODAY_LIST,
+      payload: optionalToDos,
+    };
+  } */
   let toDos = ToDoDB.data() as ToDoI[];
-  console.log("refreshTodayList");
-  let sortedToDos = toDos.filter((toDo) => Moment(toDo.dateTime).isSame(Moment(), 'day'));
+  let sortedToDos = toDos.filter((toDo) =>
+    Moment(toDo.dateTime).isSame(Moment(), 'day'),
+  );
   return {
     type: REFRESH_TODAY_LIST,
     payload: sortedToDos,
@@ -46,7 +59,7 @@ export const refreshTodayList = (optionalToDos?: ToDoI[]) => {
 };
 
 export const refreshFutureList = (optionalToDos?: ToDoI[]) => {
-  if(optionalToDos){
+  if (optionalToDos) {
     return {
       type: REFRESH_FUTURE_LIST,
       payload: optionalToDos,
@@ -97,12 +110,11 @@ export const refreshAllLists = () => {
     }
   });
   //for some reason it is working so I won't touch that code anymore :)
-   orderedPastToDos.sort((a, b) => 
-      Moment(b.title, 'YYYY-MM-DD').isBefore(
-      Moment(a.title, 'YYYY-MM-DD'))
+  orderedPastToDos.sort((a, b) =>
+    Moment(b.title, 'YYYY-MM-DD').isBefore(Moment(a.title, 'YYYY-MM-DD')),
   );
-  orderedFutureToDos.sort((a, b) => Moment(b.title, 'YYYY-MM-DD').isAfter(
-    Moment(a.title, 'YYYY-MM-DD'))
+  orderedFutureToDos.sort((a, b) =>
+    Moment(b.title, 'YYYY-MM-DD').isAfter(Moment(a.title, 'YYYY-MM-DD')),
   );
   return {
     type: REFRESH_ALL_LISTS,

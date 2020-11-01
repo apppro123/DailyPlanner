@@ -1,93 +1,91 @@
 import React from 'react';
-import {StyleSheet, Alert, Dimensions} from 'react-native';
+import { StyleSheet, Alert, Dimensions } from 'react-native';
 //own componetns
-import {OwnButton, OwnCheckBox, OwnView, OwnIcon} from '../basicC';
+import { OwnButton, OwnCheckBox, OwnView, OwnIcon } from '../basicC';
 //interfaes
-import {ToDoI} from 'res';
+import { ToDoI } from 'res';
 //strings
-import {Strings} from 'res';
-const {CANCEL, DELETE_TODO, WANT_DELETE_TODO} = Strings;
+import { Strings } from 'res';
+const { CANCEL, DELETE_TODO, WANT_DELETE_TODO } = Strings;
 //styles
-import {globalStyles} from '../../screens/style';
+import { globalStyles } from '../../screens/style';
 
-interface PropsI <NavigationType>{
+interface PropsI<NavigationType> {
   item: ToDoI;
-  index: number;
-  deleteToDo: (id: string, index: number) => void;
-  onCheckSwitch: (checked: boolean, id: string, index: number) => void;
-  postponeItem?: (index: number, item: ToDoI) => void;
+  deleteToDo: (id: string) => void;
+  onCheckSwitch: (checked: boolean, id: string) => void;
+  postponeItem?: (item: ToDoI) => void;
   navigation: NavigationType
 }
 
 export class ToDoItem<NavigationType> extends React.Component<PropsI<NavigationType>> {
   shouldComponentUpdate(nextProps: PropsI<NavigationType>) {
+    return true;
+    /* not working with nextProps, somehow it is always the same as this.props:(
     if (nextProps.item.done !== this.props.item.done) {
       return true;
     } else if (nextProps.item.name !== this.props.item.name) {
       return true;
-    } else if (nextProps.item.daily !== this.props.item.daily){
-      return true;
     }
-    return false;
+    return false; */
   }
 
   askDeleteToDo = () => {
-    const {item, index} = this.props;
+    const { item } = this.props;
     Alert.alert(DELETE_TODO, WANT_DELETE_TODO, [
-      {text: CANCEL, style: 'cancel'},
-      {text: 'OK', onPress: () => this.props.deleteToDo(item.id, index)},
+      { text: CANCEL, style: 'cancel' },
+      { text: 'OK', onPress: () => this.props.deleteToDo(item.id) },
     ]);
   };
 
   onCheckSwitch = () => {
-    const {item, index} = this.props;
-    const {done, id} = item;
-    this.props.onCheckSwitch(!done, id, index);
+    const { item } = this.props;
+    const { done, id } = item;
+    this.props.onCheckSwitch(!done, id);
   };
 
   postponeItem = () => {
-    const {index, item} = this.props;
-    this.props.postponeItem && this.props.postponeItem(index, item);
+    const { item } = this.props;
+    this.props.postponeItem && this.props.postponeItem(item);
   };
 
   navigateToChange = () => {
-    const {navigation, item} = this.props;
+    const { navigation, item } = this.props;
     navigation.navigate('ChangeToDoStackN', {
       screen: 'ChangeToDo',
-      params: {toDo: item},
+      params: { toDo: item },
     });
   };
 
   render() {
-    const {item} = this.props;
-    const {daily, name, done=false} = item;
+    const { item } = this.props;
+    const { name, done = false } = item;
     return (
-    <OwnView style={styles.container}>
-      <OwnView style={styles.checkTextContainer}>
-        <OwnCheckBox checked={done} onPress={this.onCheckSwitch} />
-        <OwnButton
-          onPress={this.navigateToChange}
-          textStyle={styles.text}
-          text={name}
-        />
-      </OwnView>
-      {!daily && (
+      <OwnView style={styles.container}>
+        <OwnView style={styles.checkTextContainer}>
+          <OwnCheckBox checked={done} onPress={this.onCheckSwitch} />
+          <OwnButton
+            onPress={this.navigateToChange}
+            textStyle={styles.text}
+            text={name}
+          />
+        </OwnView>
+
         <OwnView style={styles.buttonsContainer}>
           <OwnButton
             onPress={this.askDeleteToDo}
             style={globalStyles.deleteButton}>
             <OwnIcon iconSet="MaterialCommunity" name="trash-can" size={35} />
           </OwnButton>
-            <OwnButton onPress={this.postponeItem}>
-              <OwnIcon
-                iconSet="MaterialCommunity"
-                name="arrow-right"
-                size={35}
-              />
-            </OwnButton>
+          <OwnButton onPress={this.postponeItem}>
+            <OwnIcon
+              iconSet="MaterialCommunity"
+              name="arrow-right"
+              size={35}
+            />
+          </OwnButton>
         </OwnView>
-      )}
-    </OwnView>)
+      </OwnView>)
   }
 }
 

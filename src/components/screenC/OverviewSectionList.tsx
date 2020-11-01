@@ -9,15 +9,15 @@ const renderItemSeperator = () => {
   return <OwnView style={styles.itemSeparatorComponent} />;
 };
 
-const renderSectionHeader = ({section}) => (
-  <OwnText text={section.title}/>
+const renderSectionHeader = ({ section }) => (
+  <OwnText text={section.title} />
 )
 
 export function OverviewSectionList<T>(props: SectionListProps<T>) {
   const { sections, renderItem, extraData, onRefresh, refreshing } = props;
   return (
     <SectionList
-    renderSectionHeader={renderSectionHeader}
+      renderSectionHeader={renderSectionHeader}
       sections={sections}
       keyExtractor={keyExtractor}
       extraData={extraData}

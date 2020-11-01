@@ -105,7 +105,6 @@ class DailyToDosOverview extends React.Component<PropsI, StateI> {
     const idToDelete = this.state.idToDelete;
     //delete daily to-do
     ToDoDB.remove(idToDelete);
-    //const allToDos = await getAllToDos();
     //this.props.setRefreshAllToDos(allToDos);
     this.setState({deleteModalVisible: false});
     
