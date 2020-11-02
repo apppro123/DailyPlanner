@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 //own components
 import {
   OwnView,
@@ -7,6 +7,7 @@ import {
   OwnButton,
   OwnIcon,
   DeleteDailyToDoModal,
+  OwnText
 } from 'components';
 //navigation
 import { CompositeNavigationProp, RouteProp } from "@react-navigation/native";
@@ -16,13 +17,13 @@ import { BottomTabNTypes, DailyToDosOverviewStackNTypes } from "../types";
 //realm
 //import {getAllToDos, deleteToDo} from 'db_realm';
 //redux
-import {connect} from 'react-redux';
-import {setRefreshAllToDos} from '../../redux/actions';
+import { connect } from 'react-redux';
+import { setRefreshAllToDos } from '../../redux/actions';
 //interfaces and types
 import { ToDoI } from "res";
 import { RootStateType } from 'src/redux/reducers';
 //styles
-import {globalStyles} from '../style';
+import { globalStyles } from '../style';
 import { ToDoDB } from 'db_vasern';
 
 //typescript for redux
@@ -64,7 +65,7 @@ class DailyToDosOverview extends React.Component<PropsI, StateI> {
     this.unsubscribeBlurListner = this.props.navigation.addListener(
       'blur',
       () => {
-        this.props.navigation.setParams({previous_screen: 'dailyToDos'});
+        this.props.navigation.setParams({ previous_screen: 'dailyToDos' });
       },
     );
   }
@@ -73,8 +74,9 @@ class DailyToDosOverview extends React.Component<PropsI, StateI> {
     this.unsubscribeBlurListner();
   }
 
-  renderDailyToDo = ({item, index}: {item: ToDoI, index: number}) => {
-    const navigateToChange = () => this.props.navigation.navigate('ChangeToDoStackN', {screen: "ChangeToDo", params: {toDo: item}});
+  renderDailyToDo = ({ item, index }: { item: ToDoI, index: number }) => {
+    const navigateToChange = () => this.props.navigation.navigate('ChangeToDoStackN', { screen: "ChangeToDo", params: { toDo: item } });
+    const {recurrence} = item;
     return (
       <OwnView
         style={styles.itemContainer}
@@ -85,33 +87,35 @@ class DailyToDosOverview extends React.Component<PropsI, StateI> {
           onPress={navigateToChange}
         />
         <OwnButton
-        onPress={() => this.askDeleteToDo(item.id)}
-        style={globalStyles.deleteButton}>
-        <OwnIcon iconSet="MaterialCommunity" name="trash-can" size={35} />
-      </OwnButton>
+          onPress={() => this.askDeleteToDo(item.id)}
+          style={globalStyles.deleteButton}>
+          <OwnIcon iconSet="MaterialCommunity" name="trash-can" size={35} />
+        </OwnButton>
+        {/* show current streak of this To-do */}
+        <OwnText text={recurrence ? recurrence.currentStreak.toString() : "0"}/>
       </OwnView>
     );
   };
 
   //delete methods
   askDeleteToDo = (id: string) => {
-    this.setState({idToDelete: id, deleteModalVisible: true});
+    this.setState({ idToDelete: id, deleteModalVisible: true });
   };
 
   //methods for modal
-  onDeleteCancel = () => this.setState({deleteModalVisible: false});
+  onDeleteCancel = () => this.setState({ deleteModalVisible: false });
 
   onDeleteDailyToDo = async () => {
     const idToDelete = this.state.idToDelete;
     //delete daily to-do
     ToDoDB.remove(idToDelete);
     //this.props.setRefreshAllToDos(allToDos);
-    this.setState({deleteModalVisible: false});
-    
-  }; 
+    this.setState({ deleteModalVisible: false });
+
+  };
 
   render() {
-    const {refreshDailyList, dailyToDos} = this.props.ToDos;
+    const { refreshDailyList, dailyToDos } = this.props.ToDos;
     return (
       <OwnView style={globalStyles.screenContainer}>
         <OverviewList
@@ -140,4 +144,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default connect(mapStateToProps, {setRefreshAllToDos})(DailyToDosOverview);
+export default connect(mapStateToProps, { setRefreshAllToDos })(DailyToDosOverview);

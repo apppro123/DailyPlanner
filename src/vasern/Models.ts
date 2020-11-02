@@ -28,6 +28,9 @@ export const GroupModel = {
 export const RecurrenceModel = {
     name: RECURRENCE,
     props: {
-        recurrenceRule: "string"
+        recurrenceRule: "string",   //later add other recurrenceRules like "weekly" ...
+        //current and best streak in days
+        currentStreak: "int",
+        bestStreak: "int"
     }
 }

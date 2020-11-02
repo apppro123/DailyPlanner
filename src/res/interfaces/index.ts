@@ -30,4 +30,6 @@ export interface GroupI{
 export interface RecurrenceI {
   id: string,
   recurrenceRule: "daily"   //late i can add more like "weekly", ...
+  currentStreak: number,
+  bestStreak: number
 }
