@@ -226,7 +226,7 @@ class NewToDo extends React.Component<PropsI, StateI> {
         //today to-dos
         refreshTodayList();
       }
-      this.props.navigation.goBack();
+      this.props.navigation.navigate("ToDosOverviewN");
     })
   };
 

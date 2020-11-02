@@ -67,7 +67,7 @@ class TodayOverview extends React.Component<PropsI> {
     //delete in db
     ToDoDB.remove(id);
     //update redux => list
-    this.props.refreshTodayList()
+    this.props.refreshTodayList();
   };
 
   postponeItem = async (item: ToDoI) => {
