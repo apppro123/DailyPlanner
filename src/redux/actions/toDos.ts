@@ -21,13 +21,7 @@ export const refreshDailyList = () => {
   };
 };
 
-export const refreshPastList = (optionalToDos?: ToDoI[]) => {
-  if (optionalToDos) {
-    return {
-      type: REFRESH_PAST_LIST,
-      payload: optionalToDos,
-    };
-  }
+export const refreshPastList = () => {
   let toDos = ToDoDB.data() as ToDoI[];
   let orderedPastToDos = [] as {title: string; data: ToDoI[]}[];
   toDos.map((toDo) => {
@@ -44,16 +38,10 @@ export const refreshPastList = (optionalToDos?: ToDoI[]) => {
   };
 };
 
-export const refreshTodayList = (optionalToDos?: ToDoI[]) => {
-  if (optionalToDos) {
-    return {
-      type: REFRESH_TODAY_LIST,
-      payload: optionalToDos,
-    };
-  }
+export const refreshTodayList = () => {
   let toDos = ToDoDB.data() as ToDoI[];
   let sortedToDos = toDos.filter((toDo) =>
-    Moment(toDo.dateTime).isSame(Moment(), 'day'),
+    Moment(toDo.dateTime).isSame(Moment(), 'day')
   );
   return {
     type: REFRESH_TODAY_LIST,
@@ -61,13 +49,7 @@ export const refreshTodayList = (optionalToDos?: ToDoI[]) => {
   };
 };
 
-export const refreshFutureList = (optionalToDos?: ToDoI[]) => {
-  if (optionalToDos) {
-    return {
-      type: REFRESH_FUTURE_LIST,
-      payload: optionalToDos,
-    };
-  }
+export const refreshFutureList = () => {
   let toDos = ToDoDB.data() as ToDoI[];
   let orderedFutureToDos = [] as {title: string; data: ToDoI[]}[];
   toDos.map((toDo) => {
