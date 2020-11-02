@@ -63,6 +63,8 @@ class TodayOverview extends React.Component<PropsI> {
     this.props.refreshTodayList()
   };
 
+  //doesn't refresh respectively needs time to remove event in db but await doesn't work
+  //and I'm not sure if calling .onRemove and then refreshing is the "best" idea...
   deleteToDo = async (id: string) => {
     //delete in db
     ToDoDB.remove(id);
