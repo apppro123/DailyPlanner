@@ -173,11 +173,11 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
     let changedToDo = {
       name: name.trim(),
       notes: notes.trim(),
-      dateTime: dateTime.toDate(),
+      dateTime: dateTime.toISOString(),
       recurrence: changedRecurrence,
       //groupsIds: groups,
       done: oldToDo.done
-    } as ToDoI;
+    };
     ToDoDB.update(oldToDo.id, changedToDo);
     this.props.refreshAllLists();
     this.props.navigation.goBack();
