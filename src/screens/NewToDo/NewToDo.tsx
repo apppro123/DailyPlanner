@@ -201,7 +201,7 @@ class NewToDo extends React.Component<PropsI, StateI> {
       name: name.trim(),
       notes: notes.trim(),
       groups: groups,
-      dateTime: dateTime.toDate(),
+      dateTime: dateTime.toISOString(),
       done: false,
       recurrence: undefined as RecurrenceI | undefined
     };
