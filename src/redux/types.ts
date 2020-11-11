@@ -9,3 +9,6 @@ export const REFRESH_FUTURE_LIST = "REFRESH_FUTURE_LIST";
 export const REFRESH_ALL_LISTS = "REFRESH_ALL_LISTS";
 //sets all to-dos and refreshes all lists
 export const SET_REFRESH_ALL_TODOS = "SET_REFRESH_ALL_TODOS";
+
+//settings
+export const REFRESH_GROUP_LIST = "REFRESH_GROUP_LIST";
