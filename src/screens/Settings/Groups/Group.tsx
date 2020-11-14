@@ -68,7 +68,7 @@ class Group extends React.Component<PropsI, StateI> {
     //see if group already exists or not
     const { mode, groupId } = this.props.route.params
     let allGroups = [] as GroupI[];
-    if (mode === "change" && groupId) {
+    if (mode === "change" && groupId) { 
       //change group
       let changedGroup = {
         name: name,
@@ -83,10 +83,8 @@ class Group extends React.Component<PropsI, StateI> {
         notes: notes
       } as GroupI;
       GroupDB.insert(newGroup);
-      //allGroups = 
     }
-    /* allGroups not rly defined anymore! */
-    this.props.navigation.navigate("GroupsOverview", {groups: allGroups});
+
   }
 
   //change inputs

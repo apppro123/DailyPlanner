@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
   },
   switchContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     width: '100%',
     borderWidth: 1,
     borderRadius: 10,

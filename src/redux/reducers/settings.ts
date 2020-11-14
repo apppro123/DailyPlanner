@@ -19,6 +19,6 @@ export default (state = initialState, action: {payload: any, type: string}) => {
         case REFRESH_GROUP_LIST:
             return {...state, refreshGroupOverview: !state.refreshGroupOverview, allGroups: payload};
         default: 
-            return: state;
+            return state;
     }
 }

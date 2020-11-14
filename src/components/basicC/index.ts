@@ -7,6 +7,7 @@ import OwnPicker from './Picker';
 import OwnIcon from './Icon';
 import OwnList from './List';
 import OwnCheckBox from "./CheckBox";
+import OwnSwitchText from "./SwitchText";
 
 export {
   OwnButton,
@@ -15,6 +16,7 @@ export {
   OwnTextInput,
   OwnIcon,
   OwnSwitch,
+  OwnSwitchText,
   OwnPicker,
   OwnList,
   OwnCheckBox
