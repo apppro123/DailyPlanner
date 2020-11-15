@@ -11,7 +11,6 @@ import { BottomTabNTypes, ToDosOverviewMaterialTopTabNTypes } from "../types";
 import { connect } from 'react-redux';
 import { refreshPastList, refreshTodayList } from '../../redux/actions';
 //db
-//import {updateOnlyDone, deleteToDo, updateOnlyDateTime} from 'db_realm';
 //interfaces and types
 import { ToDoI } from "res";
 import { RootStateType } from 'src/redux/reducers';

@@ -3,10 +3,10 @@ import { StyleSheet, Modal, ScrollView } from 'react-native';
 import Moment from "moment";
 //vasern db
 import { ToDoDB, GroupDB } from "db_vasern";
-//import { insertNewToDo, getAllGroups, insertNewRecurrence } from 'db_realm';
 //redux
 import { connect } from 'react-redux';
 import { refreshDailyList, refreshPastList, refreshTodayList, refreshFutureList } from "../../redux/actions";
+import { RootStateType } from 'src/redux/reducers';
 //own components
 import {
   OwnView,
@@ -28,7 +28,6 @@ import { Strings, GroupI, SettingStrings, ToDoStrings, RecurrenceI } from 'res';
 const { NAME, NOTES, ADD, DAILY } = Strings;
 const { GROUPS } = SettingStrings;
 const { PLS_SELECT_TIME_AFTER_NOW } = ToDoStrings;
-import { RootStateType } from 'src/redux/reducers';
 //styles
 import { globalStyles } from '../style';
 

@@ -14,8 +14,6 @@ import { CompositeNavigationProp, RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from '@react-navigation/stack';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { BottomTabNTypes, DailyToDosOverviewStackNTypes } from "../types";
-//realm
-//import {getAllToDos, deleteToDo} from 'db_realm';
 //redux
 import { connect } from 'react-redux';
 import { setRefreshAllToDos } from '../../redux/actions';

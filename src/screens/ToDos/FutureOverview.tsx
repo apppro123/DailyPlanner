@@ -12,11 +12,9 @@ import { connect } from 'react-redux';
 import {
   refreshFutureList,
 } from '../../redux/actions';
-//db
-//import {updateOnlyDone, deleteToDo} from 'db_realm';
+import { RootStateType } from 'src/redux/reducers';
 //interfaces and types
 import { ToDoI } from "res";
-import { RootStateType } from 'src/redux/reducers';
 //styles
 import { globalStyles } from '../style';
 import { ToDoDB } from 'db_vasern';

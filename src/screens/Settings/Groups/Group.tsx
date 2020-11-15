@@ -3,24 +3,40 @@ import React from "react";
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from '@react-navigation/stack';
 import { SettingsStackNTypes } from "../../types";
+//vasern
+import { GroupDB } from "db_vasern";
+//redux
+import { connect } from "react-redux";
+import { refreshGroupList } from "../../../redux/actions";
+import { RootStateType } from "src/redux/reducers";
 //components
 import { OwnView, OwnTextInput, OwnButton } from "components";
-//db realm
-//import { getGroupById, updateGroup, insertNewGroup } from "db_realm";
 //strings
 import { SettingStrings, GroupI, Strings } from "res";
 const { NAME, NOTES, ADD, DAILY, CHANGE } = Strings;
 const { GROUPS } = SettingStrings;
 //styles
 import { globalStyles } from "../../style";
-import { GroupDB } from "db_vasern";
 const { screenContainer } = globalStyles;
+
+//typescript for redux
+const mapStateToProps = (state: RootStateType) => {
+  return {
+
+  }
+}
+
+const mapDispatchToProps = {
+  refreshGroupList
+}
+type PropsFromRedux = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
+
 
 //navigation props
 type GroupNavigationProps = StackNavigationProp<SettingsStackNTypes, "Group">;
 type GroupRouteProps = RouteProp<SettingsStackNTypes, "Group">
 
-interface PropsI {
+interface PropsI extends PropsFromRedux{
   navigation: GroupNavigationProps,
   route: GroupRouteProps
 }
@@ -47,7 +63,7 @@ class Group extends React.Component<PropsI, StateI> {
       //change text button
       textForHeaderRight = CHANGE;
       //fetch group by id
-      const group = GroupDB.get({id: groupId});
+      const group = GroupDB.get({ id: groupId });
       let { name, notes } = group;
       this.setState({ name: name, notes: notes });
     }
@@ -68,13 +84,14 @@ class Group extends React.Component<PropsI, StateI> {
     //see if group already exists or not
     const { mode, groupId } = this.props.route.params
     let allGroups = [] as GroupI[];
-    if (mode === "change" && groupId) { 
+    if (mode === "change" && groupId) {
       //change group
       let changedGroup = {
         name: name,
         notes: notes
       }
       GroupDB.update(groupId, changedGroup);
+
       //allGroups = 
     } else {
       //create new group
@@ -84,7 +101,8 @@ class Group extends React.Component<PropsI, StateI> {
       } as GroupI;
       GroupDB.insert(newGroup);
     }
-
+    this.props.refreshGroupList();
+    this.props.navigation.goBack();
   }
 
   //change inputs
@@ -119,4 +137,4 @@ class Group extends React.Component<PropsI, StateI> {
   }
 }
 
-export default Group;
+export default connect(mapStateToProps, mapDispatchToProps)(Group);

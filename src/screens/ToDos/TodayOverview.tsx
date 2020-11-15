@@ -14,7 +14,6 @@ import {
   refreshFutureList,
 } from '../../redux/actions';
 //db
-//import { updateOnlyDone, deleteToDo, updateOnlyDateTime } from 'db_realm';
 //interfaces and types
 import { ToDoI } from "res";
 import { RootStateType } from 'src/redux/reducers';
@@ -67,7 +66,7 @@ class TodayOverview extends React.Component<PropsI> {
   //and I'm not sure if calling .onRemove and then refreshing is the "best" idea...
   deleteToDo = async (id: string) => {
     //delete in db
-    ToDoDB.remove(id);
+    await ToDoDB.remove(id);
     //update redux => list
     this.props.refreshTodayList();
   };

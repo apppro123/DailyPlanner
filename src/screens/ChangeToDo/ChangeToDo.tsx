@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, Modal, ScrollView } from 'react-native';
 //db
-//import { updateToDo, getAllGroups, deleteRecurrence, insertNewRecurrence } from 'db_realm';
 import { RecurrenceDB, GroupDB, ToDoDB } from "db_vasern";
 //redux
 import { connect } from 'react-redux';

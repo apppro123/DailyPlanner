@@ -1,12 +1,17 @@
 import React from "react";
+import {StyleSheet} from "react-native";
 //navigation
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from '@react-navigation/stack';
 import { SettingsStackNTypes } from "../../types";
 //components
 import { OwnText, OwnView, OverviewList, OwnButton } from "components";
-//db realm
-//import { getAllGroups } from "db_realm";
+//redux
+import { connect } from "react-redux";
+import {
+    refreshGroupList
+} from "../../../redux/actions";
+import { RootStateType } from "src/redux/reducers";
 //strings
 import { SettingStrings, GroupI } from "res";
 const { GROUPS } = SettingStrings;
@@ -15,11 +20,22 @@ import { globalStyles } from "../../style";
 import { GroupDB } from "db_vasern";
 const { listItemContainer, screenContainer } = globalStyles;
 
+//typescript for redux
+const mapStateToProps = (state: RootStateType) => {
+    return {
+        Settings: state.settings
+    }
+}
+const mapDispatchToProps = {
+    refreshGroupList
+}
+type PropsFromRedux = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
+
 //navigation props
 type GroupsOverviewNavigationProps = StackNavigationProp<SettingsStackNTypes, "GroupsOverview">;
 type GroupsOverviewRouteProps = RouteProp<SettingsStackNTypes, "GroupsOverview">
 
-interface PropsI {
+interface PropsI extends PropsFromRedux{
     navigation: GroupsOverviewNavigationProps,
     route: GroupsOverviewRouteProps
 }
@@ -52,21 +68,21 @@ class GroupsOverview extends React.Component<PropsI, StateI> {
         );
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         this.unsubscribeFocus();
     }
 
     refreshGroups = () => {
         const groups = this.props.route.params?.groups;
-        if(groups){
-            this.setState({groups: groups});
+        if (groups) {
+            this.setState({ groups: groups });
         }
     }
 
     renderGroup = ({ item, index }) => {
         return (
             <OwnButton style={listItemContainer} onPress={() => this.onGroupPress(item.id)}>
-                <OwnText text={item.name} />
+                <OwnText style={styles} text={item.name} />
             </OwnButton>
         )
     }
@@ -77,12 +93,22 @@ class GroupsOverview extends React.Component<PropsI, StateI> {
     }
 
     render() {
+        const {refreshGroupOverview, allGroups} = this.props.Settings;
         return (
             <OwnView style={screenContainer}>
-                <OverviewList data={this.state.groups} renderItem={this.renderGroup} extraData={this.state.groups.length}/>
+                <OverviewList
+                    data={allGroups}
+                    renderItem={this.renderGroup} 
+                    extraData={refreshGroupOverview}/>
             </OwnView>
         )
     }
 }
 
-export default GroupsOverview;
+const styles = StyleSheet.create({
+    groupName: {
+        fontSize: 20
+    }
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(GroupsOverview);
