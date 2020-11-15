@@ -11,7 +11,7 @@ import { connect } from "react-redux";
 import {
     refreshGroupList
 } from "../../../redux/actions";
-import { RootStateType } from "src/redux/reducers";
+import { RootStateType } from "../../../redux/reducers";
 //strings
 import { SettingStrings, GroupI } from "res";
 const { GROUPS } = SettingStrings;
