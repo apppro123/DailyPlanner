@@ -289,6 +289,7 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
             autoFocus={true}
             value={name}
             onChangeText={this.changeName}
+            multiline={true}
           />
           <OwnTextInput
             style={styles.notesInput}

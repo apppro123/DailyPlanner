@@ -333,6 +333,7 @@ class NewToDo extends React.Component<PropsI, StateI> {
           <OwnTextInput
             style={styles.nameInput}
             placeholder={NAME}
+            multiline={true}
             autoFocus={true}
             value={name}
             onChangeText={this.changeName}
