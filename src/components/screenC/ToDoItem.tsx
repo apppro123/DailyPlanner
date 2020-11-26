@@ -101,6 +101,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 20,
     width: Dimensions.get('window').width - 190,
+    maxHeight: 50
   },
   buttonsContainer: {
     width: 100,
