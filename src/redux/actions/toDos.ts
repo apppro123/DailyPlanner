@@ -9,11 +9,11 @@ import {
   REFRESH_ALL_LISTS,
 } from '../types';
 //interfaces
-import {ToDoI} from 'res';
+import {SavedToDoI} from 'res';
 
 //refresh different overview lists
 export const refreshDailyList = () => {
-  let toDos = ToDoDB.data() as ToDoI[];
+  let toDos = ToDoDB.data() as SavedToDoI[];
   let sortedToDos = toDos.filter((toDo) => toDo.recurrence);
   return {
     type: REFRESH_DAILY_LIST,
@@ -22,8 +22,8 @@ export const refreshDailyList = () => {
 };
 
 export const refreshPastList = () => {
-  let toDos = ToDoDB.data() as ToDoI[];
-  let orderedPastToDos = [] as {title: string; data: ToDoI[]}[];
+  let toDos = ToDoDB.data() as SavedToDoI[];
+  let orderedPastToDos = [] as {title: string; data: SavedToDoI[]}[];
   toDos.map((toDo) => {
     if (Moment(toDo.dateTime, '').isBefore(Moment(), 'day')) {
       insertInOrderedList(toDo, orderedPastToDos);
@@ -39,7 +39,7 @@ export const refreshPastList = () => {
 };
 
 export const refreshTodayList = () => {
-  let toDos = ToDoDB.data() as ToDoI[];
+  let toDos = ToDoDB.data() as SavedToDoI[];
   let sortedToDos = toDos.filter((toDo) =>
     Moment(toDo.dateTime).isSame(Moment(), 'day')
   );
@@ -50,8 +50,8 @@ export const refreshTodayList = () => {
 };
 
 export const refreshFutureList = () => {
-  let toDos = ToDoDB.data() as ToDoI[];
-  let orderedFutureToDos = [] as {title: string; data: ToDoI[]}[];
+  let toDos = ToDoDB.data() as SavedToDoI[];
+  let orderedFutureToDos = [] as {title: string; data: SavedToDoI[]}[];
   toDos.map((toDo) => {
     if (Moment(toDo.dateTime, '').isAfter(Moment(), 'day')) {
       insertInOrderedList(toDo, orderedFutureToDos);
@@ -67,11 +67,11 @@ export const refreshFutureList = () => {
 };
 
 export const refreshAllLists = () => {
-  let toDos = ToDoDB.data() as ToDoI[];
-  let dailyToDos = [] as ToDoI[];
-  let orderedPastToDos = [] as {title: string; data: ToDoI[]}[];
-  let todayToDos = [] as ToDoI[];
-  let orderedFutureToDos = [] as {title: string; data: ToDoI[]}[];
+  let toDos = ToDoDB.data() as SavedToDoI[];
+  let dailyToDos = [] as SavedToDoI[];
+  let orderedPastToDos = [] as {title: string; data: SavedToDoI[]}[];
+  let todayToDos = [] as SavedToDoI[];
+  let orderedFutureToDos = [] as {title: string; data: SavedToDoI[]}[];
   toDos.map((toDo) => {
     if (toDo.recurrence) {
       //all day
@@ -111,9 +111,9 @@ export const refreshAllLists = () => {
 };
 
 const insertInOrderedList = (
-  toDo: ToDoI,
-  orderedList: {title: string; data: ToDoI[]}[],
-) /* : {title: string; data: ToDoI[]}[] */ => {
+  toDo: SavedToDoI,
+  orderedList: {title: string; data: SavedToDoI[]}[],
+) /* : {title: string; data: SavedToDoI[]}[] */ => {
   const formattedDate = Moment(toDo.dateTime).format('YYYY-MM-DD');
   //if a date is already in orderedFutureToDos
   if (orderedList.length === 0) {

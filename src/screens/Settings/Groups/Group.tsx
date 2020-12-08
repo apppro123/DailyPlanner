@@ -90,7 +90,7 @@ class Group extends React.Component<PropsI, StateI> {
         name: name,
         notes: notes
       }
-      GroupDB.update(groupId, changedGroup);
+      await GroupDB.asyncUpdate(groupId, changedGroup);
 
       //allGroups = 
     } else {
@@ -99,7 +99,7 @@ class Group extends React.Component<PropsI, StateI> {
         name: name,
         notes: notes
       } as GroupI;
-      GroupDB.insert(newGroup);
+      await GroupDB.asyncInsert(newGroup);
     }
     this.props.refreshGroupList();
     this.props.navigation.goBack();
