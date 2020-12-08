@@ -3,7 +3,7 @@ import { StyleSheet, Alert, Dimensions } from 'react-native';
 //own componetns
 import { OwnButton, OwnCheckBox, OwnView, OwnIcon } from '../basicC';
 //interfaes
-import { ToDoI } from 'res';
+import { SavedToDoI } from 'res';
 //strings
 import { Strings } from 'res';
 const { CANCEL, DELETE_TODO, WANT_DELETE_TODO } = Strings;
@@ -11,10 +11,10 @@ const { CANCEL, DELETE_TODO, WANT_DELETE_TODO } = Strings;
 import { globalStyles } from '../../screens/style';
 
 interface PropsI<NavigationType> {
-  item: ToDoI;
+  item: SavedToDoI;
   deleteToDo: (id: string) => void;
   onCheckSwitch: (checked: boolean, id: string) => void;
-  postponeItem?: (item: ToDoI) => void;
+  postponeItem?: (item: SavedToDoI) => void;
   navigation: NavigationType
 }
 

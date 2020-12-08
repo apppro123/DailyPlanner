@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Modal, ScrollView } from 'react-native';
 import Moment from "moment";
 //vasern db
-import { ToDoDB, GroupDB } from "db_vasern";
+import { ToDoDB, GroupDB, RecurrenceDB } from "db_vasern";
 //redux
 import { connect } from 'react-redux';
 import { refreshDailyList, refreshPastList, refreshTodayList, refreshFutureList } from "../../redux/actions";
@@ -205,28 +205,28 @@ class NewToDo extends React.Component<PropsI, StateI> {
       recurrence: undefined as RecurrenceI | undefined
     };
     if (daily) {
-      newToDo.recurrence = { recurrenceRule: "daily", currentStreak: 0, bestStreak: 0 };
+      const newRecurrence = await RecurrenceDB.asyncInsert({ recurrenceRule: "daily", currentStreak: 0, bestStreak: 0 });
+      console.log(newRecurrence);
+      newToDo.recurrence = newRecurrence;
     }
-    ToDoDB.insert(newToDo);
+    await ToDoDB.asyncInsert(newToDo);
     const { refreshTodayList, refreshFutureList, refreshDailyList } = this.props;
-    ToDoDB.onInsert(() => {
-      if (daily) {
-        //refresh lists
-        refreshTodayList();
-        refreshFutureList();
-        refreshDailyList();
-      } else if (dateTime.isBefore(Moment().startOf("day"))) {
-        //past to-dos
-        refreshPastList()
-      } else if (dateTime.isAfter(Moment().endOf("day"))) {
-        //future to-dos
-        refreshFutureList();
-      } else {
-        //today to-dos
-        refreshTodayList();
-      }
-      this.props.navigation.navigate("ToDosOverviewN");
-    })
+    if (daily) {
+      //refresh lists
+      refreshTodayList();
+      refreshFutureList();
+      refreshDailyList();
+    } else if (dateTime.isBefore(Moment().startOf("day"))) {
+      //past to-dos
+      refreshPastList()
+    } else if (dateTime.isAfter(Moment().endOf("day"))) {
+      //future to-dos
+      refreshFutureList();
+    } else {
+      //today to-dos
+      refreshTodayList();
+    }
+    this.props.navigation.navigate("ToDosOverviewN");
   };
 
   //change inputs

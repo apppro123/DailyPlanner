@@ -38,8 +38,6 @@ class App extends React.Component<{}, StateI> {
       store.dispatch(refreshAllLists());
       this.setState({ loadedData: true })
     })
-    ToDoDB.onRemove((remove) => console.log(remove))
-    ToDoDB.onInsert((insert) => console.log(insert));
   }
 
   componentWillUnmount() {

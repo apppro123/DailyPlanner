@@ -9,13 +9,13 @@ import {
   REFRESH_ALL_LISTS
 } from '../types';
 //interfaces
-import {ToDoI} from "res";
+import {SavedToDoI} from "res";
 
 export interface ToDoReduxStateI {
-  dailyToDos: ToDoI[],
-  pastToDos: ToDoI[],
-  todayToDos: ToDoI[],
-  futureToDos: ToDoI[],
+  dailyToDos: SavedToDoI[],
+  pastToDos: SavedToDoI[],
+  todayToDos: SavedToDoI[],
+  futureToDos: SavedToDoI[],
   refreshDailyList: boolean,
   refreshPastList: boolean,
   refreshTodayList: boolean,
