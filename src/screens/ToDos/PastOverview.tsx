@@ -12,7 +12,7 @@ import { connect } from 'react-redux';
 import { refreshPastList, refreshTodayList } from '../../redux/actions';
 //db
 //interfaces and types
-import { SavedToDoI } from "res";
+import { ToDoI } from "res";
 import { RootStateType } from 'src/redux/reducers';
 //styles
 import { globalStyles } from '../style';
@@ -38,7 +38,7 @@ interface PropsI extends PropsFromRedux {
 }
 
 class YesterdayOverview extends React.Component<PropsI> {
-  renderYesterdayToDo = ({ item, index }: { item: SavedToDoI, index: number }) => {
+  renderYesterdayToDo = ({ item, index }: { item: ToDoI, index: number }) => {
     return (
       <ToDoItem<YesterdayOverviewNavigationProps>
         item={item}
@@ -53,24 +53,24 @@ class YesterdayOverview extends React.Component<PropsI> {
   //methods for list
   onCheckSwitch = async (newDone: boolean, id: string) => {
     //update in db_vasern
-    await ToDoDB.asyncUpdate(id, { done: newDone });
+    ToDoDB.update(id, { done: newDone });
     //update in redux => list
     this.props.refreshPastList()
   };
 
   deleteToDo = async (id: string) => {
     //delete in db
-    await ToDoDB.asyncRemove(id);
+    ToDoDB.remove(id);
     //delete in redux => list
     this.props.refreshPastList()
   };
 
-  postponeItem = async (item: SavedToDoI) => {
+  postponeItem = async (item: ToDoI) => {
     const { refreshPastList, refreshTodayList } = this.props;
     const { dateTime, id } = item;
     const newDateTime = Moment(dateTime).add(1, "days").toDate();
     //change in db
-    await ToDoDB.asyncUpdate(id, { dateTime: newDateTime });
+    ToDoDB.update(id, { dateTime: newDateTime });
     //change in redux => lists
     refreshPastList();
     refreshTodayList();

@@ -15,7 +15,7 @@ import {
 } from '../../redux/actions';
 //db
 //interfaces and types
-import { SavedToDoI } from "res";
+import { ToDoI } from "res";
 import { RootStateType } from 'src/redux/reducers';
 //styles
 import { globalStyles } from '../style';
@@ -42,7 +42,7 @@ interface PropsI extends PropsFromRedux {
 }
 
 class TodayOverview extends React.Component<PropsI> {
-  renderTodayToDo = ({ item, index }: { item: SavedToDoI, index: number }) => {
+  renderTodayToDo = ({ item, index }: { item: ToDoI, index: number }) => {
     return (
       <ToDoItem<TodayOverviewNavigationProps>
         item={item}
@@ -57,7 +57,7 @@ class TodayOverview extends React.Component<PropsI> {
   //methods for list
   onCheckSwitch = async (newDone: boolean, id: string) => {
     //update realm
-    await ToDoDB.asyncUpdate(id, { done: newDone });
+    ToDoDB.update(id, { done: newDone });
     //update redux => list
     this.props.refreshTodayList()
   };
@@ -66,16 +66,16 @@ class TodayOverview extends React.Component<PropsI> {
   //and I'm not sure if calling .onRemove and then refreshing is the "best" idea...
   deleteToDo = async (id: string) => {
     //delete in db
-    await ToDoDB.asyncRemove(id);
+    await ToDoDB.remove(id);
     //update redux => list
     this.props.refreshTodayList();
   };
 
-  postponeItem = async (item: SavedToDoI) => {
+  postponeItem = async (item: ToDoI) => {
     const { dateTime, id } = item;
     const newDateTime = Moment(dateTime).add(1, "days").toDate();
     //change date in db
-    await ToDoDB.asyncUpdate(id, { dateTime: newDateTime });
+    ToDoDB.update(id, { dateTime: newDateTime });
     //change redux => lists
     this.props.refreshFutureList();
     this.props.refreshTodayList();

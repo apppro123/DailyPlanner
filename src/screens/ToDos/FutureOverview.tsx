@@ -14,7 +14,7 @@ import {
 } from '../../redux/actions';
 import { RootStateType } from 'src/redux/reducers';
 //interfaces and types
-import { SavedToDoI } from "res";
+import { ToDoI } from "res";
 //styles
 import { globalStyles } from '../style';
 import { ToDoDB } from 'db_vasern';
@@ -41,7 +41,7 @@ interface PropsI extends PropsFromRedux {
 
 
 class FutureOverview extends React.Component<PropsI> {
-  renderFutureToDo = ({ item, index }: { item: SavedToDoI, index: number }) => {
+  renderFutureToDo = ({ item, index }: { item: ToDoI, index: number }) => {
     return (
       <ToDoItem<FutureOverviewNavigationProps>
         item={item}
@@ -56,23 +56,23 @@ class FutureOverview extends React.Component<PropsI> {
   //methods for list
   onCheckSwitch = async (newDone: boolean, id: string) => {
     //update vasern
-    await ToDoDB.asyncUpdate(id, { done: newDone });
+    ToDoDB.update(id, { done: newDone });
     //update redux => lists
     this.props.refreshFutureList();
   };
 
   deleteToDo = async (id: string) => {
     //delete in db
-    await ToDoDB.asyncRemove(id);
+    ToDoDB.remove(id);
     //delete in redux => list
     this.props.refreshFutureList()
   };
 
-  postponeItem = async (item: SavedToDoI) => {
+  postponeItem = async (item: ToDoI) => {
     const { dateTime, id } = item;
     const newDateTime = Moment(dateTime).add(1, "days").toDate();
     //change in db
-    await ToDoDB.asyncUpdate(id, { dateTime: newDateTime });
+    ToDoDB.update(id, { dateTime: newDateTime });
     //change in redux => lists
     this.props.refreshFutureList();
   };

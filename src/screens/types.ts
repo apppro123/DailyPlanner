@@ -1,11 +1,11 @@
 //interfaces
-import {SavedToDoI, GroupI} from "res";
+import {ToDoI, GroupI} from "res";
 
 export type BottomTabNTypes = {
     ToDosOverviewN: undefined,
     NewToDoN: undefined,
     DailyToDosN: undefined,
-    ChangeToDoStackN: {screen: string, params: {toDo: SavedToDoI}}
+    ChangeToDoStackN: {screen: string, params: {toDo: ToDoI}}
     SettingsN: undefined
 }
 
@@ -16,7 +16,7 @@ export type ToDosOverviewMaterialTopTabNTypes = {
 }
 
 export type ChangeTodoStackNTypes = {
-    ChangeToDo: {changeDisabled?: boolean, toDo: SavedToDoI}
+    ChangeToDo: {changeDisabled?: boolean, toDo: ToDoI}
 }
 
 export type DailyToDosOverviewStackNTypes = {

@@ -22,7 +22,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { BottomTabNTypes, ChangeTodoStackNTypes } from "../types";
 //strings, interfaces, types
-import { Strings, GroupI, ToDoStrings, SettingStrings, RecurrenceI } from 'res';
+import { Strings, GroupI, ToDoI, ToDoStrings, SettingStrings, RecurrenceI } from 'res';
 const { NAME, NOTES, CHANGE, DAILY, CHANGE_TODO } = Strings;
 const { GROUPS } = SettingStrings;
 const { PLS_SELECT_TIME_AFTER_NOW } = ToDoStrings;
@@ -72,14 +72,13 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
   constructor(props: PropsI) {
     super(props);
     //get to-do
-    const { name, notes, recurrence_id, dateTime, groups_id } = this.props.route.params?.toDo;
-    let groups = groups_id.map((id) => GroupDB.get(id) as GroupI);
+    const { name, notes, recurrence, dateTime } = this.props.route.params?.toDo;
     this.state = {
       name: name,
       notes: notes,
       dateTime: Moment(dateTime),
-      daily: recurrence_id !== "" ? true : false,
-      groups: groups,
+      daily: recurrence ? true : false,
+      groups: [] as GroupI[],
       allRemainingGroups: [] as GroupI[],
       datePickerVisible: false,
       timePickerVisible: false,
@@ -137,12 +136,12 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
 
   //change to-do
   changeAfterFocus = () => {
-    const { name, notes, recurrence_id, dateTime } = this.props.route.params.toDo;
+    const { name, notes, recurrence, dateTime } = this.props.route.params.toDo;
     this.setState({
       name: name,
       notes: notes,
       dateTime: Moment(dateTime),
-      daily: recurrence_id !== "" ? true : false,
+      daily: recurrence ? true : false,
     });
   };
 
@@ -151,8 +150,8 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
     const oldToDo = this.props.route.params.toDo;
     const { name, notes, daily, dateTime, groups } = this.state;
 
-    let changedRecurrence = RecurrenceDB.get(oldToDo.recurrence_id) as undefined | RecurrenceI;
-    if (oldToDo.recurrence_id === "") {
+    let changedRecurrence = oldToDo.recurrence;
+    if (!oldToDo.recurrence) {
       //if old recurrence was not set
       if (daily) {
         //now it has recurence
@@ -175,10 +174,10 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
       notes: notes.trim(),
       dateTime: dateTime.toISOString(),
       recurrence: changedRecurrence,
-      groups: groups,
+      //groupsIds: groups,
       done: oldToDo.done
     };
-    await ToDoDB.asyncUpdate(oldToDo.id, changedToDo);
+    ToDoDB.update(oldToDo.id, changedToDo);
     this.props.refreshAllLists();
     this.props.navigation.goBack();
   };

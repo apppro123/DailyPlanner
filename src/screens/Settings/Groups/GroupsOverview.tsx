@@ -1,11 +1,11 @@
 import React from "react";
-import { StyleSheet, Dimensions, Alert } from "react-native";
+import {StyleSheet} from "react-native";
 //navigation
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from '@react-navigation/stack';
 import { SettingsStackNTypes } from "../../types";
 //components
-import { OwnView, OverviewList, OwnButton, OwnIcon } from "components";
+import { OwnText, OwnView, OverviewList, OwnButton } from "components";
 //redux
 import { connect } from "react-redux";
 import {
@@ -13,13 +13,12 @@ import {
 } from "../../../redux/actions";
 import { RootStateType } from "../../../redux/reducers";
 //strings
-import { SettingStrings, GroupI, Strings } from "res";
-const { GROUPS, DELETE_GROUP, WANT_DELETE_GROUP } = SettingStrings;
-const { CANCEL } = Strings;
+import { SettingStrings, GroupI } from "res";
+const { GROUPS } = SettingStrings;
 //styles
 import { globalStyles } from "../../style";
 import { GroupDB } from "db_vasern";
-const { screenContainer } = globalStyles;
+const { listItemContainer, screenContainer } = globalStyles;
 
 //typescript for redux
 const mapStateToProps = (state: RootStateType) => {
@@ -36,7 +35,7 @@ type PropsFromRedux = ReturnType<typeof mapStateToProps> & typeof mapDispatchToP
 type GroupsOverviewNavigationProps = StackNavigationProp<SettingsStackNTypes, "GroupsOverview">;
 type GroupsOverviewRouteProps = RouteProp<SettingsStackNTypes, "GroupsOverview">
 
-interface PropsI extends PropsFromRedux {
+interface PropsI extends PropsFromRedux{
     navigation: GroupsOverviewNavigationProps,
     route: GroupsOverviewRouteProps
 }
@@ -80,28 +79,11 @@ class GroupsOverview extends React.Component<PropsI, StateI> {
         }
     }
 
-    askDeleteGroup = (id: string) => {
-        Alert.alert(DELETE_GROUP, WANT_DELETE_GROUP, [
-            { text: CANCEL, style: 'cancel' },
-            { text: 'OK', onPress: () => this.deleteGroup(id) },
-          ]);
-    }
-
-    deleteGroup = async (id: string) => {
-        await GroupDB.asyncRemove(id);
-        this.props.refreshGroupList();
-    }
-
     renderGroup = ({ item, index }) => {
         return (
-            <OwnView style={styles.listItemContainer}>
-                <OwnButton onPress={() => this.onGroupPress(item.id)} textStyle={styles.groupName} text={item.name} />
-                <OwnButton
-                    onPress={() => this.askDeleteGroup(item.id)}
-                    style={globalStyles.deleteButton}>
-                    <OwnIcon iconSet="MaterialCommunity" name="trash-can" size={35} />
-                </OwnButton>
-            </OwnView>
+            <OwnButton style={listItemContainer} onPress={() => this.onGroupPress(item.id)}>
+                <OwnText style={styles} text={item.name} />
+            </OwnButton>
         )
     }
 
@@ -111,28 +93,22 @@ class GroupsOverview extends React.Component<PropsI, StateI> {
     }
 
     render() {
-        const { refreshGroupOverview, allGroups } = this.props.Settings;
+        const {refreshGroupOverview, allGroups} = this.props.Settings;
         return (
             <OwnView style={screenContainer}>
                 <OverviewList
                     data={allGroups}
-                    renderItem={this.renderGroup}
-                    extraData={refreshGroupOverview} />
+                    renderItem={this.renderGroup} 
+                    extraData={refreshGroupOverview}/>
             </OwnView>
         )
     }
 }
 
 const styles = StyleSheet.create({
-    listItemContainer: {
-        flexDirection: "row",
-        justifyContent: 'space-between',
-    },
     groupName: {
-        fontSize: 20,
-        width: Dimensions.get('window').width - 190,
-        maxHeight: 50
-    },
+        fontSize: 20
+    }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupsOverview);

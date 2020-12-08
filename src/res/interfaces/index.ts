@@ -21,17 +21,6 @@ export interface ToDoI {
   recurrence?: RecurrenceI
 }
 
-//after saving to vasern, it changes ojbects to ids of objects
-export interface SavedToDoI {
-  id: string;
-  name: string;
-  notes: string;
-  done: boolean;
-  groups_id: string[];
-  dateTime: Date;
-  recurrence_id: string
-}
-
 export interface GroupI{
   id: string,
   name: string,
@@ -39,7 +28,7 @@ export interface GroupI{
 }
 
 export interface RecurrenceI {
-  //no id becaue it will be generate after inserting in db
+  id: string,
   recurrenceRule: "daily"   //late i can add more like "weekly", ...
   currentStreak: number,
   bestStreak: number

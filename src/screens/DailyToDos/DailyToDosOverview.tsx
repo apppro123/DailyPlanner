@@ -18,7 +18,7 @@ import { BottomTabNTypes, DailyToDosOverviewStackNTypes } from "../types";
 import { connect } from 'react-redux';
 import { setRefreshAllToDos } from '../../redux/actions';
 //interfaces and types
-import { SavedToDoI } from "res";
+import { ToDoI } from "res";
 import { RootStateType } from 'src/redux/reducers';
 //styles
 import { globalStyles } from '../style';
@@ -72,7 +72,7 @@ class DailyToDosOverview extends React.Component<PropsI, StateI> {
     this.unsubscribeBlurListner();
   }
 
-  renderDailyToDo = ({ item, index }: { item: SavedToDoI, index: number }) => {
+  renderDailyToDo = ({ item, index }: { item: ToDoI, index: number }) => {
     const navigateToChange = () => this.props.navigation.navigate('ChangeToDoStackN', { screen: "ChangeToDo", params: { toDo: item } });
     const {recurrence} = item;
     return (
@@ -106,7 +106,7 @@ class DailyToDosOverview extends React.Component<PropsI, StateI> {
   onDeleteDailyToDo = async () => {
     const idToDelete = this.state.idToDelete;
     //delete daily to-do
-    await ToDoDB.asyncRemove(idToDelete);
+    ToDoDB.remove(idToDelete);
     //this.props.setRefreshAllToDos(allToDos);
     this.setState({ deleteModalVisible: false });
 
