@@ -6379,8 +6379,8 @@ vary@~1.1.2:
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
 
 vasern@vasern/vasern#0.3.xx-with-async:
-  version "0.3.66"
-  resolved "https://codeload.github.com/vasern/vasern/tar.gz/2ddd2b18c6fe5b2ff0703974fc2acc9beb6e54af"
+  version "0.3.68"
+  resolved "https://codeload.github.com/vasern/vasern/tar.gz/69832d2c6e3fdd1c3e15e1e2cc3d354897f81be2"
   dependencies:
     eslint-config-airbnb-base "^13.1.0"
 
