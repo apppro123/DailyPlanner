@@ -16,7 +16,7 @@ export default class OwnCheckBox extends React.PureComponent<PropsI> {
             onPress,
             style
         } = this.props;
-        const name = checked ? "checkbox-blank-outline" : "checkbox-marked-outline";
+        const name = checked ? "checkbox-marked-outline" : "checkbox-blank-outline";
         return(
             <OwnButton onPress={onPress} style={style}>
                 <OwnIcon name={name} iconSet={"MaterialCommunity"} size={35}/>
