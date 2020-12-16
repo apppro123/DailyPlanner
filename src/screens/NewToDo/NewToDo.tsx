@@ -205,28 +205,29 @@ class NewToDo extends React.Component<PropsI, StateI> {
       recurrence: undefined as RecurrenceI | undefined
     };
     if (daily) {
+      //await on asyncInsert() useles at the moment :(
       const newRecurrence = await RecurrenceDB.asyncInsert({ recurrenceRule: "daily", currentStreak: 0, bestStreak: 0 });
-      console.log(newRecurrence);
       newToDo.recurrence = newRecurrence;
     }
     await ToDoDB.asyncInsert(newToDo);
     const { refreshTodayList, refreshFutureList, refreshDailyList } = this.props;
-    if (daily) {
-      //refresh lists
-      refreshTodayList();
-      refreshFutureList();
-      refreshDailyList();
-    } else if (dateTime.isBefore(Moment().startOf("day"))) {
-      //past to-dos
-      refreshPastList()
-    } else if (dateTime.isAfter(Moment().endOf("day"))) {
-      //future to-dos
-      refreshFutureList();
-    } else {
-      //today to-dos
-      refreshTodayList();
-    }
-    this.props.navigation.navigate("ToDosOverviewN");
+    //I have still to do to though it is asyncInsert, maybe map function in vasern cannot be async idk yet
+      if (daily) {
+        //refresh lists
+        refreshTodayList();
+        refreshFutureList();
+        refreshDailyList();
+      } else if (dateTime.isBefore(Moment().startOf("day"))) {
+        //past to-dos
+        refreshPastList()
+      } else if (dateTime.isAfter(Moment().endOf("day"))) {
+        //future to-dos
+        refreshFutureList();
+      } else {
+        //today to-dos
+        refreshTodayList();
+      }
+      this.props.navigation.navigate("ToDosOverviewN");
   };
 
   //change inputs

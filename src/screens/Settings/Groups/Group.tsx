@@ -36,7 +36,7 @@ type PropsFromRedux = ReturnType<typeof mapStateToProps> & typeof mapDispatchToP
 type GroupNavigationProps = StackNavigationProp<SettingsStackNTypes, "Group">;
 type GroupRouteProps = RouteProp<SettingsStackNTypes, "Group">
 
-interface PropsI extends PropsFromRedux{
+interface PropsI extends PropsFromRedux {
   navigation: GroupNavigationProps,
   route: GroupRouteProps
 }

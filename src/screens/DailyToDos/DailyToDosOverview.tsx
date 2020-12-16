@@ -16,7 +16,7 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { BottomTabNTypes, DailyToDosOverviewStackNTypes } from "../types";
 //redux
 import { connect } from 'react-redux';
-import { setRefreshAllToDos } from '../../redux/actions';
+import { refreshDailyList } from '../../redux/actions';
 //interfaces and types
 import { SavedToDoI } from "res";
 import { RootStateType } from 'src/redux/reducers';
@@ -32,7 +32,7 @@ const mapStateToProps = (state: RootStateType) => {
   };
 };
 const mapDispatchToProps = {
-  setRefreshAllToDos
+  refreshDailyList
 }
 type PropsFromRedux = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
 
@@ -107,7 +107,7 @@ class DailyToDosOverview extends React.Component<PropsI, StateI> {
     const idToDelete = this.state.idToDelete;
     //delete daily to-do
     await ToDoDB.asyncRemove(idToDelete);
-    //this.props.setRefreshAllToDos(allToDos);
+    this.props.refreshDailyList();
     this.setState({ deleteModalVisible: false });
 
   };
@@ -142,4 +142,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default connect(mapStateToProps, { setRefreshAllToDos })(DailyToDosOverview);
+export default connect(mapStateToProps, { refreshDailyList })(DailyToDosOverview);

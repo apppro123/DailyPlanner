@@ -37,6 +37,7 @@ class App extends React.Component<{}, StateI> {
     VasernDB.onLoaded(() => {
       store.dispatch(refreshAllLists());
       this.setState({ loadedData: true })
+      
     })
   }
 

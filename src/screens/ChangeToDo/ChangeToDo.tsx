@@ -73,7 +73,7 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
     super(props);
     //get to-do
     const { name, notes, recurrence_id, dateTime, groups_id } = this.props.route.params?.toDo;
-    let groups = groups_id.map((id) => GroupDB.get(id) as GroupI);
+    let groups = groups_id[0] !== "" ? groups_id.map((id) => GroupDB.get(id) as GroupI) : [];
     this.state = {
       name: name,
       notes: notes,
