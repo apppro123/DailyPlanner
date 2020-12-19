@@ -5,7 +5,7 @@ export type BottomTabNTypes = {
     ToDosOverviewN: undefined,
     NewToDoN: undefined,
     DailyToDosN: undefined,
-    ChangeToDoStackN: {screen: string, params: {toDo: SavedToDoI}}
+    ChangeToDoStackN: {screen: string, params: {toDoId: string}}
     SettingsN: undefined
 }
 
@@ -16,7 +16,7 @@ export type ToDosOverviewMaterialTopTabNTypes = {
 }
 
 export type ChangeTodoStackNTypes = {
-    ChangeToDo: {changeDisabled?: boolean, toDo: SavedToDoI}
+    ChangeToDo: {changeDisabled?: boolean, toDoId: string}
 }
 
 export type DailyToDosOverviewStackNTypes = {

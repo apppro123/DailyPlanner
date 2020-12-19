@@ -53,7 +53,7 @@ export class ToDoItem<NavigationType> extends React.Component<PropsI<NavigationT
     const { navigation, item } = this.props;
     navigation.navigate('ChangeToDoStackN', {
       screen: 'ChangeToDo',
-      params: { toDo: item },
+      params: { toDoId: item.id },
     });
   };
 

@@ -122,7 +122,7 @@ class NewToDo extends React.Component<PropsI, StateI> {
     );
 
     //set all groups
-    let allRemainingGroups = GroupDB.data();
+    let allRemainingGroups = [...GroupDB.data()] as GroupI[];
     this.setState({
       daily,
       allRemainingGroups
@@ -157,7 +157,7 @@ class NewToDo extends React.Component<PropsI, StateI> {
       daily = this.checkDaily(history);
     }
     //get all groups
-    let allRemainingGroups = GroupDB.data();
+    let allRemainingGroups = [...GroupDB.data()] as GroupI[];
 
     this.setState({
       daily: daily,

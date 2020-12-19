@@ -73,7 +73,7 @@ class DailyToDosOverview extends React.Component<PropsI, StateI> {
   }
 
   renderDailyToDo = ({ item, index }: { item: SavedToDoI, index: number }) => {
-    const navigateToChange = () => this.props.navigation.navigate('ChangeToDoStackN', { screen: "ChangeToDo", params: { toDo: item } });
+    const navigateToChange = () => this.props.navigation.navigate('ChangeToDoStackN', { screen: "ChangeToDo", params: { toDoId: item.id } });
     const {recurrence} = item;
     return (
       <OwnView

@@ -11,7 +11,7 @@ import { SettingsStackN } from "./Settings";
 //types
 import { BottomTabNTypes } from "./types";
 //own components
-import { OwnIcon, OwnView, OwnButton } from 'components';
+import { OwnIcon, OwnView } from 'components';
 //strings
 import { ToDoStrings, ToDosOverviewStrings } from 'res';
 const { DAILY_TODOS } = ToDoStrings;

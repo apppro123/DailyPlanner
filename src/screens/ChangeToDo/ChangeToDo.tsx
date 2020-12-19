@@ -71,16 +71,31 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
 
   constructor(props: PropsI) {
     super(props);
+    console.log("constructor");
     //get to-do
-    const { name, notes, recurrence_id, dateTime, groups_id } = this.props.route.params?.toDo;
-    let groups = groups_id[0] !== "" ? groups_id.map((id) => GroupDB.get(id) as GroupI) : [];
+    const { name, notes, recurrence_id, dateTime, groups_id } = ToDoDB.get(this.props.route.params?.toDoId);
+    let allRemainingGroups = [...GroupDB.data()] as GroupI[];
+    let groups = [] as GroupI[];
+    if (Array.isArray(groups_id) && groups_id[0] !== "") {
+      groups_id.forEach(id => {
+        let group = GroupDB.get(id);
+        if (group) {
+          //add to groups
+          groups.push(group);
+          //remove group from remaining groups
+          //index of group in remaining groups which should get removed
+          const remainingGroupIndex = allRemainingGroups.findIndex((remainingGroup: GroupI) => remainingGroup.id === id);
+          allRemainingGroups.splice(remainingGroupIndex, 1);
+        }
+      });
+    }
     this.state = {
       name: name,
       notes: notes,
       dateTime: Moment(dateTime),
       daily: recurrence_id !== "" ? true : false,
       groups: groups,
-      allRemainingGroups: [] as GroupI[],
+      allRemainingGroups: allRemainingGroups,
       datePickerVisible: false,
       timePickerVisible: false,
       groupsModalVisible: false
@@ -109,14 +124,6 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
     );
   }
 
-  async componentDidMount() {
-    //set all groups
-    let allRemainingGroups = GroupDB.data();
-    this.setState({
-      allRemainingGroups: allRemainingGroups
-    })
-  }
-
   componentWillUnmount() {
     this.removeFocusListener();
     this.removeBlurListener();
@@ -135,20 +142,39 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
     })
   }
 
+  /* idea of cloning the .data maybe that is the solution :) */
   //change to-do
   changeAfterFocus = () => {
-    const { name, notes, recurrence_id, dateTime } = this.props.route.params.toDo;
+    console.log("changeAfterFocus")
+    const { name, notes, recurrence_id, dateTime, groups_id } = ToDoDB.get(this.props.route.params.toDoId);
+    let allRemainingGroups = [...GroupDB.data()] as GroupI[];
+    let groups = [] as GroupI[];
+    if (Array.isArray(groups_id) && groups_id[0] !== "") {
+      groups_id.forEach(id => {
+        let group = GroupDB.get(id);
+        if (group) {
+          //add to groups
+          groups.push(group);
+          //remove group from remaining groups
+          //index of group in remaining groups which should get removed
+          const remainingGroupIndex = allRemainingGroups.findIndex((remainingGroup: GroupI) => remainingGroup.id === id);
+          allRemainingGroups.splice(remainingGroupIndex, 1);
+        }
+      });
+    }
     this.setState({
       name: name,
       notes: notes,
       dateTime: Moment(dateTime),
       daily: recurrence_id !== "" ? true : false,
+      groups: groups,
+      allRemainingGroups: allRemainingGroups,
     });
   };
 
   //add new to do
   changeToDo = async () => {
-    const oldToDo = this.props.route.params.toDo;
+    const oldToDo = ToDoDB.get(this.props.route.params.toDoId);
     const { name, notes, daily, dateTime, groups } = this.state;
 
     let changedRecurrence = RecurrenceDB.get(oldToDo.recurrence_id) as undefined | RecurrenceI;
@@ -173,7 +199,7 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
     let changedToDo = {
       name: name.trim(),
       notes: notes.trim(),
-      dateTime: dateTime.toISOString(),
+      dateTime: dateTime.toDate(),
       recurrence: changedRecurrence,
       groups: groups,
       done: oldToDo.done
@@ -249,11 +275,10 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
     let { allRemainingGroups, groups } = this.state;
     //add group to selected groups for to-do
     groups.push(group)
-    //remove groupd from remaining groups
+    //remove group from remaining groups
     //index of group in remaining groups which should get removed
     const remainingGroupIndex = allRemainingGroups.findIndex((remainingGroup: GroupI) => remainingGroup.id === group.id);
     allRemainingGroups.splice(remainingGroupIndex, 1);
-
     this.setState({ allRemainingGroups, groups, groupsModalVisible: false });
   }
 
@@ -281,6 +306,8 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
 
   render() {
     const { name, notes, daily, dateTime, datePickerVisible, timePickerVisible, groups, groupsModalVisible, allRemainingGroups } = this.state;
+    console.log(groups);
+    console.log(allRemainingGroups);
     return (
       <OwnView style={globalStyles.screenContainer}>
         <ScrollView>

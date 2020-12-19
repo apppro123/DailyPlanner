@@ -3,7 +3,7 @@ import { AsyncStorage } from "react-native";
 //library for time/date/...
 import Moment from 'moment';
 //vasern db
-import VasernDB, { ToDoDB } from "db_vasern";
+import VasernDB from "db_vasern";
 //where screens get loaded
 import Main from './src';
 //redux
