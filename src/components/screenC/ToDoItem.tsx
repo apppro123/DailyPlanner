@@ -13,7 +13,7 @@ import { globalStyles } from '../../screens/style';
 interface PropsI<NavigationType> {
   item: SavedToDoI;
   deleteToDo: (id: string) => void;
-  onCheckSwitch: (checked: boolean, id: string) => void;
+  onCheckSwitch: (checked: boolean, id: string, recurrenceId: string) => void;
   postponeItem?: (item: SavedToDoI) => void;
   navigation: NavigationType
 }
@@ -40,8 +40,8 @@ export class ToDoItem<NavigationType> extends React.Component<PropsI<NavigationT
 
   onCheckSwitch = () => {
     const { item } = this.props;
-    const { done, id } = item;
-    this.props.onCheckSwitch(!done, id);
+    const { done, id, recurrence_id } = item;
+    this.props.onCheckSwitch(!done, id, recurrence_id);
   };
 
   postponeItem = () => {
@@ -70,20 +70,19 @@ export class ToDoItem<NavigationType> extends React.Component<PropsI<NavigationT
             text={name}
           />
         </OwnView>
-
         <OwnView style={styles.buttonsContainer}>
           <OwnButton
             onPress={this.askDeleteToDo}
             style={globalStyles.deleteButton}>
             <OwnIcon iconSet="MaterialCommunity" name="trash-can" size={35} />
           </OwnButton>
-          <OwnButton onPress={this.postponeItem}>
+          {this.props.postponeItem && <OwnButton onPress={this.postponeItem}>
             <OwnIcon
               iconSet="MaterialCommunity"
               name="arrow-right"
               size={35}
             />
-          </OwnButton>
+          </OwnButton>}
         </OwnView>
       </OwnView>)
   }

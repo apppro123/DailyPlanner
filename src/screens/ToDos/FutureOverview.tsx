@@ -56,14 +56,14 @@ class FutureOverview extends React.Component<PropsI> {
   //methods for list
   onCheckSwitch = async (newDone: boolean, id: string) => {
     //update vasern
-    await ToDoDB.asyncUpdate(id, { done: newDone });
+    await ToDoDB.update(id, { done: newDone });
     //update redux => lists
     this.props.refreshFutureList();
   };
 
   deleteToDo = async (id: string) => {
     //delete in db
-    await ToDoDB.asyncRemove(id);
+    await ToDoDB.remove(id);
     //delete in redux => list
     this.props.refreshFutureList()
   };
@@ -72,7 +72,7 @@ class FutureOverview extends React.Component<PropsI> {
     const { dateTime, id } = item;
     const newDateTime = Moment(dateTime).add(1, "days").toDate();
     //change in db
-    await ToDoDB.asyncUpdate(id, { dateTime: newDateTime });
+    await ToDoDB.update(id, { dateTime: newDateTime });
     //change in redux => lists
     this.props.refreshFutureList();
   };

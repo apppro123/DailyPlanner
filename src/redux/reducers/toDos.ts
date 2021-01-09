@@ -1,6 +1,4 @@
 import {
-  //set
-  SET_REFRESH_ALL_TODOS,
   //refresh
   REFRESH_DAILY_LIST,
   REFRESH_PAST_LIST,

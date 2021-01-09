@@ -8,6 +8,7 @@ import OwnIcon from './Icon';
 import OwnList from './List';
 import OwnCheckBox from "./CheckBox";
 import OwnSwitchText from "./SwitchText";
+import OwnExpandableList from "./ExpandableListView";
 
 export {
   OwnButton,
@@ -19,5 +20,6 @@ export {
   OwnSwitchText,
   OwnPicker,
   OwnList,
-  OwnCheckBox
+  OwnCheckBox,
+  OwnExpandableList
 };

@@ -22,7 +22,7 @@ import { SavedToDoI } from "res";
 import { RootStateType } from 'src/redux/reducers';
 //styles
 import { globalStyles } from '../style';
-import { ToDoDB } from 'db_vasern';
+import { ToDoDB, RecurrenceDB } from 'db_vasern';
 
 //typescript for redux
 const mapStateToProps = (state: RootStateType) => {
@@ -73,8 +73,9 @@ class DailyToDosOverview extends React.Component<PropsI, StateI> {
   }
 
   renderDailyToDo = ({ item, index }: { item: SavedToDoI, index: number }) => {
-    const navigateToChange = () => this.props.navigation.navigate('ChangeToDoStackN', { screen: "ChangeToDo", params: { toDoId: item.id } });
-    const {recurrence} = item;
+    const navigateToChange = () => this.props.navigation.navigate('ChangeToDoStackN', { screen: "ChangeToDo", params: { toDoId: item.id }});
+    const {recurrence_id} = item;
+    const recurrence = RecurrenceDB.get(recurrence_id);
     return (
       <OwnView
         style={styles.itemContainer}
@@ -106,10 +107,9 @@ class DailyToDosOverview extends React.Component<PropsI, StateI> {
   onDeleteDailyToDo = async () => {
     const idToDelete = this.state.idToDelete;
     //delete daily to-do
-    await ToDoDB.asyncRemove(idToDelete);
+    await ToDoDB.remove(idToDelete);
     this.props.refreshDailyList();
     this.setState({ deleteModalVisible: false });
-
   };
 
   render() {

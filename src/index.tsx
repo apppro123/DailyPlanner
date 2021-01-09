@@ -1,6 +1,8 @@
 import React from 'react';
 //theme
 import { ThemeProvider } from 'styled-components/native';
+//themes
+import {OwnDarkTheme, OwnDefaultTheme} from "res";
 //for knowing if user is in dark mode or not
 import { AppearanceProvider, Appearance } from "react-native-appearance";
 //navigation
@@ -11,8 +13,6 @@ import { connect } from 'react-redux';
 import {
   changeNavigatorsState,
 } from './redux/actions';
-//themes
-import {OwnDarkTheme, OwnDefaultTheme} from "res";
 //interfaces and types
 import { RootStateType } from 'src/redux/reducers';
 import {ThemeI} from "res";
@@ -52,7 +52,7 @@ class Main extends React.Component<PropsI, StateI> {
   componentDidMount() {
     this.appearanceListener = Appearance.addChangeListener(({ colorScheme }) => {
       this.setState({ scheme: colorScheme })
-    })
+    });
   }
 
   componentWillUnmount() {

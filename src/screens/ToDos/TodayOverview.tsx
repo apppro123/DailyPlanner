@@ -1,7 +1,7 @@
 import React from 'react';
 import Moment from "moment";
 //own components
-import { OwnView, OverviewList, ToDoItem } from 'components';
+import { OwnView, OverviewList, ToDoItem, ExpandableDailyToDosList } from 'components';
 //navigation
 import { CompositeNavigationProp } from "@react-navigation/native";
 import { MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
@@ -57,7 +57,7 @@ class TodayOverview extends React.Component<PropsI> {
   //methods for list
   onCheckSwitch = async (newDone: boolean, id: string) => {
     //update realm
-    await ToDoDB.asyncUpdate(id, { done: newDone });
+    await ToDoDB.update(id, { done: newDone });
     //update redux => list
     this.props.refreshTodayList()
   };
@@ -66,7 +66,7 @@ class TodayOverview extends React.Component<PropsI> {
   //and I'm not sure if calling .onRemove and then refreshing is the "best" idea...
   deleteToDo = async (id: string) => {
     //delete in db
-    await ToDoDB.asyncRemove(id);
+    await ToDoDB.remove(id);
     //update redux => list
     this.props.refreshTodayList();
   };
@@ -75,16 +75,17 @@ class TodayOverview extends React.Component<PropsI> {
     const { dateTime, id } = item;
     const newDateTime = Moment(dateTime).add(1, "days").toDate();
     //change date in db
-    await ToDoDB.asyncUpdate(id, { dateTime: newDateTime });
+    await ToDoDB.update(id, { dateTime: newDateTime });
     //change redux => lists
     this.props.refreshFutureList();
     this.props.refreshTodayList();
   };
 
   render() {
-    const { refreshTodayList, todayToDos } = this.props.ToDos;
+    const { refreshTodayList, todayToDos, dailyToDos, refreshDailyList } = this.props.ToDos;
     return (
       <OwnView style={globalStyles.screenContainer}>
+        <ExpandableDailyToDosList data={dailyToDos} extraData={refreshDailyList} navigation={this.props.navigation}/>
         <OverviewList
           data={todayToDos}
           renderItem={this.renderTodayToDo}

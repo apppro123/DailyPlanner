@@ -5,6 +5,7 @@ import { RecurrenceDB, GroupDB, ToDoDB } from "db_vasern";
 //redux
 import { connect } from 'react-redux';
 import { refreshAllLists } from '../../redux/actions';
+import { RootStateType } from 'src/redux/reducers';
 //own components
 import {
   OwnView,
@@ -26,7 +27,6 @@ import { Strings, GroupI, ToDoStrings, SettingStrings, RecurrenceI } from 'res';
 const { NAME, NOTES, CHANGE, DAILY, CHANGE_TODO } = Strings;
 const { GROUPS } = SettingStrings;
 const { PLS_SELECT_TIME_AFTER_NOW } = ToDoStrings;
-import { RootStateType } from 'src/redux/reducers';
 //styles
 import { globalStyles } from '../style';
 import Moment from 'moment';
@@ -71,7 +71,6 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
 
   constructor(props: PropsI) {
     super(props);
-    console.log("constructor");
     //get to-do
     const { name, notes, recurrence_id, dateTime, groups_id } = ToDoDB.get(this.props.route.params?.toDoId);
     let allRemainingGroups = [...GroupDB.data()] as GroupI[];
@@ -145,7 +144,6 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
   /* idea of cloning the .data maybe that is the solution :) */
   //change to-do
   changeAfterFocus = () => {
-    console.log("changeAfterFocus")
     const { name, notes, recurrence_id, dateTime, groups_id } = ToDoDB.get(this.props.route.params.toDoId);
     let allRemainingGroups = [...GroupDB.data()] as GroupI[];
     let groups = [] as GroupI[];
@@ -204,7 +202,7 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
       groups: groups,
       done: oldToDo.done
     };
-    await ToDoDB.asyncUpdate(oldToDo.id, changedToDo);
+    await ToDoDB.update(oldToDo.id, changedToDo);
     this.props.refreshAllLists();
     this.props.navigation.goBack();
   };
@@ -306,8 +304,6 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
 
   render() {
     const { name, notes, daily, dateTime, datePickerVisible, timePickerVisible, groups, groupsModalVisible, allRemainingGroups } = this.state;
-    console.log(groups);
-    console.log(allRemainingGroups);
     return (
       <OwnView style={globalStyles.screenContainer}>
         <ScrollView>

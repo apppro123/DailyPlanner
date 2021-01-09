@@ -14,9 +14,9 @@ interface ButtonProps extends ThemeI {
 }
 
 interface OwnButtonProps extends TouchableOpacityProps {
-  text?: string;
-  textStyle?: {};
-  selected?: boolean;
+  text?: string,
+  textStyle?: {},
+  selected?: boolean
 }
 
 const ButtonText = styled.Text<TextProps>`

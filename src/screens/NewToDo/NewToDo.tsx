@@ -205,13 +205,12 @@ class NewToDo extends React.Component<PropsI, StateI> {
       recurrence: undefined as RecurrenceI | undefined
     };
     if (daily) {
-      //await on asyncInsert() useles at the moment :(
-      const newRecurrence = await RecurrenceDB.asyncInsert({ recurrenceRule: "daily", currentStreak: 0, bestStreak: 0 });
-      newToDo.recurrence = newRecurrence;
+      const newRecurrence = await RecurrenceDB.insert({ recurrenceRule: "daily", currentStreak: 0, bestStreak: 0 });
+      //[0] because it insert() return an array
+      newToDo.recurrence = newRecurrence[0];
     }
-    await ToDoDB.asyncInsert(newToDo);
+    await ToDoDB.insert(newToDo);
     const { refreshTodayList, refreshFutureList, refreshDailyList } = this.props;
-    //I have still to do to though it is asyncInsert, maybe map function in vasern cannot be async idk yet
       if (daily) {
         //refresh lists
         refreshTodayList();

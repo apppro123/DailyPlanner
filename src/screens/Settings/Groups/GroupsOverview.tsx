@@ -74,10 +74,8 @@ class GroupsOverview extends React.Component<PropsI, StateI> {
     }
 
     refreshGroups = () => {
-        const groups = this.props.route.params?.groups;
-        if (groups) {
-            this.setState({ groups: groups });
-        }
+        let allGroups = GroupDB.data();
+        this.setState({ groups: allGroups });
     }
 
     askDeleteGroup = (id: string) => {
@@ -88,7 +86,7 @@ class GroupsOverview extends React.Component<PropsI, StateI> {
     }
 
     deleteGroup = async (id: string) => {
-        await GroupDB.asyncRemove(id);
+        await GroupDB.remove(id);
         this.props.refreshGroupList();
     }
 

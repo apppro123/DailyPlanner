@@ -14,7 +14,7 @@ import {SavedToDoI} from 'res';
 //refresh different overview lists
 export const refreshDailyList = () => {
   let toDos = ToDoDB.data() as SavedToDoI[];
-  let sortedToDos = toDos.filter((toDo) => toDo.recurrence);
+  let sortedToDos = toDos.filter((toDo) => toDo.recurrence_id);
   return {
     type: REFRESH_DAILY_LIST,
     payload: sortedToDos,
@@ -25,7 +25,7 @@ export const refreshPastList = () => {
   let toDos = ToDoDB.data() as SavedToDoI[];
   let orderedPastToDos = [] as {title: string; data: SavedToDoI[]}[];
   toDos.map((toDo) => {
-    if (Moment(toDo.dateTime, '').isBefore(Moment(), 'day')) {
+    if (Moment(toDo.dateTime, '').isBefore(Moment(), 'day') && !toDo.recurrence_id) {
       insertInOrderedList(toDo, orderedPastToDos);
     }
   });
@@ -41,7 +41,7 @@ export const refreshPastList = () => {
 export const refreshTodayList = () => {
   let toDos = ToDoDB.data() as SavedToDoI[];
   let sortedToDos = toDos.filter((toDo) =>
-    Moment(toDo.dateTime).isSame(Moment(), 'day')
+    Moment(toDo.dateTime).isSame(Moment(), 'day') && !toDo.recurrence_id
   );
   return {
     type: REFRESH_TODAY_LIST,
@@ -53,7 +53,7 @@ export const refreshFutureList = () => {
   let toDos = ToDoDB.data() as SavedToDoI[];
   let orderedFutureToDos = [] as {title: string; data: SavedToDoI[]}[];
   toDos.map((toDo) => {
-    if (Moment(toDo.dateTime, '').isAfter(Moment(), 'day')) {
+    if (Moment(toDo.dateTime, '').isAfter(Moment(), 'day') && !toDo.recurrence_id) {
       insertInOrderedList(toDo, orderedFutureToDos);
     }
   });
@@ -73,12 +73,9 @@ export const refreshAllLists = () => {
   let todayToDos = [] as SavedToDoI[];
   let orderedFutureToDos = [] as {title: string; data: SavedToDoI[]}[];
   toDos.map((toDo) => {
-    if (toDo.recurrence) {
+    if (toDo.recurrence_id) {
       //all day
       dailyToDos.push(toDo);
-      /* orderedPastToDos =  */ insertInOrderedList(toDo, orderedPastToDos);
-      todayToDos.push(toDo);
-      /* orderedFutureToDos =  */ insertInOrderedList(toDo, orderedFutureToDos);
     } else {
       //not all day
       //test past/today/future

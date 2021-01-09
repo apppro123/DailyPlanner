@@ -53,14 +53,14 @@ class YesterdayOverview extends React.Component<PropsI> {
   //methods for list
   onCheckSwitch = async (newDone: boolean, id: string) => {
     //update in db_vasern
-    await ToDoDB.asyncUpdate(id, { done: newDone });
+    await ToDoDB.update(id, { done: newDone });
     //update in redux => list
     this.props.refreshPastList()
   };
 
   deleteToDo = async (id: string) => {
     //delete in db
-    await ToDoDB.asyncRemove(id);
+    await ToDoDB.remove(id);
     //delete in redux => list
     this.props.refreshPastList()
   };
@@ -70,7 +70,7 @@ class YesterdayOverview extends React.Component<PropsI> {
     const { dateTime, id } = item;
     const newDateTime = Moment(dateTime).add(1, "days").toDate();
     //change in db
-    await ToDoDB.asyncUpdate(id, { dateTime: newDateTime });
+    await ToDoDB.update(id, { dateTime: newDateTime });
     //change in redux => lists
     refreshPastList();
     refreshTodayList();

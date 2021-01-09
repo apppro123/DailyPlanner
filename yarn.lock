@@ -913,6 +913,13 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
+"@react-native-async-storage/async-storage@^1.13.2":
+  version "1.13.2"
+  resolved "https://registry.yarnpkg.com/@react-native-async-storage/async-storage/-/async-storage-1.13.2.tgz#649f78527f16cd5a87071a888219ef7a35ef5c79"
+  integrity sha512-isTDvUApRJPVWFxV15yrQSOGqarX7cIedq/y4N5yWSnotf68D9qvDEv1I7rCXhkBDi0u4OJt6GA9dksUT0D3wg==
+  dependencies:
+    deep-assign "^3.0.0"
+
 "@react-native-community/async-storage@^1.11.0":
   version "1.11.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/async-storage/-/async-storage-1.11.0.tgz#bf81b8813080846f150c67f531987c429b442166"
@@ -6380,7 +6387,7 @@ vary@~1.1.2:
 
 vasern@vasern/vasern#0.3.xx-with-async:
   version "0.3.68"
-  resolved "https://codeload.github.com/vasern/vasern/tar.gz/69832d2c6e3fdd1c3e15e1e2cc3d354897f81be2"
+  resolved "https://codeload.github.com/vasern/vasern/tar.gz/b4db37146f2ba025d0be0d4140f8e266f1c178bc"
   dependencies:
     eslint-config-airbnb-base "^13.1.0"
 
