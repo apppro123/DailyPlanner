@@ -1,21 +1,27 @@
 import React from 'react';
+import { StyleSheet, Dimensions } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { OwnView } from "components";
 //library for time/date/...
 import Moment from 'moment';
 //vasern db
-import VasernDB from "db_vasern";
+import VasernDB, { ToDoDB } from "db_vasern";
 //where screens get loaded
 import Main from './src';
 //redux
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
-import { refreshAllLists } from "./src/redux/actions";
+import { refreshAllLists, startRefreshing } from "./src/redux/actions";
+//interfaces
+import { SavedToDoI } from 'res';
+import { ActivityIndicator } from 'react-native';
 
 //format for moment
 const FORMAT = 'DD-MM-YYYY';
 
+const LATEST_DATE = 'latestDate';
+
 interface StateI {
-  calculationsMade: boolean,
   latestDate: string,
   timeoutId?: NodeJS.Timeout,
   loadedData: boolean
@@ -24,20 +30,17 @@ interface StateI {
 class App extends React.Component<{}, StateI> {
   state = {
     latestDate: Moment().format(FORMAT),
-    calculationsMade: false,
     timeoutId: undefined as undefined | NodeJS.Timeout,
     loadedData: false
   };
 
   componentDidMount() {
-
-    //this.makeCalculations();
-
     //first call on db and set to-dos
     VasernDB.onLoaded(() => {
-      store.dispatch(refreshAllLists());
-      this.setState({ loadedData: true })
-      
+      //loaded vasern data
+      this.setState({ loadedData: true });
+      //make calculations
+      this.makeCalculations();
     })
   }
 
@@ -52,60 +55,98 @@ class App extends React.Component<{}, StateI> {
   /* refresh ^=  refresh all views and set all-day to-dos done to false plus 
   refresh streaks if necessary (reset currentStreak to 0 if not done that day) */
   makeCalculations = async () => {
-    const LATEST_DATE = 'latestDate';
+    store.dispatch(startRefreshing());
     try {
       //get last saved date
       let latestDate = await AsyncStorage.getItem(LATEST_DATE);
       if (latestDate !== null) {
         if (!Moment(latestDate, FORMAT).isSame(Moment(), 'day')) {
           /* 
-          refresh
+          date has changed
            */
           //update date in AsyncStorage and state
           const newLatestDate = Moment().format(FORMAT);
           await AsyncStorage.setItem(LATEST_DATE, newLatestDate);
           //get milliseconds from now to end of day
           let diffToDayEnd = Moment().endOf("day").diff(Moment());
-          //call function to refresh at end of day
+          //set timer to call function to refresh at end of day
           this.state.timeoutId = setTimeout(this.changeToDosNewDay, diffToDayEnd);
-        } else {
-          //date has not changed
-          //get and set to-dos
+
+          //change all done of daily events to undone
+          let toDos = ToDoDB.data() as SavedToDoI[];
+          for (const toDo of toDos) {
+            if (toDo.recurrence_id && toDo.done === true) {
+              await ToDoDB.update(toDo.id, { done: false })
+            }
+          }
+          //refresh views
           store.dispatch(refreshAllLists());
+        } else {
+          /*
+          date has not changed
+          */
           //get milliseconds from now to end of day
           let diffToDayEnd = Moment().endOf("day").diff(Moment());
-          // call function to refresh at end of day
+          //set timer to call function to refresh at end of day
           this.state.timeoutId = setTimeout(this.changeToDosNewDay, diffToDayEnd);
+          //get and set to-dos
+          store.dispatch(refreshAllLists());
         }
       } else {
-        //LATEST_DATE not set => first launch of application
+        /*
+        LATEST_DATE not set => first launch of application
+        */
         const newLatestDate = Moment().format(FORMAT);
         await AsyncStorage.setItem(LATEST_DATE, newLatestDate);
         //get milliseconds from now to end of day
         let diffToDayEnd = Moment().endOf("day").diff(Moment());
-        // call function to refresh at end of day
+        // set timer to call function to refresh at end of day
         this.state.timeoutId = setTimeout(this.changeToDosNewDay, diffToDayEnd);
       }
-      this.setState({ calculationsMade: true });
     } catch (error) {
       alert('Sorry, an error occured!');
-      this.setState({ calculationsMade: true });
     }
   };
 
-  changeToDosNewDay = () => {
-    //change allDay done and streaks
+  changeToDosNewDay = async () => {
+    //update date in AsyncStorage and state
+    const newLatestDate = Moment().format(FORMAT);
+    await AsyncStorage.setItem(LATEST_DATE, newLatestDate);
+    //get milliseconds from now to end of day
+    let diffToDayEnd = Moment().endOf("day").diff(Moment());
+    //set timer to call function to refresh at end of day
+    this.state.timeoutId = setTimeout(this.changeToDosNewDay, diffToDayEnd);
 
+    //change all done of daily events to undone
+    let toDos = ToDoDB.data() as SavedToDoI[];
+    for (const toDo of toDos) {
+      if (toDo.recurrence_id && toDo.done === true) {
+        await ToDoDB.update(toDo.id, { done: false })
+      }
+    }
     //refresh views
+    store.dispatch(refreshAllLists());
   }
 
   render() {
     return (
       <Provider store={store}>
+        {store.getState().toDos.refreshing &&
+          <OwnView style={styles.activityIndicatorContainer}>
+            <ActivityIndicator />
+          </OwnView>}
         {this.state.loadedData && <Main />}
       </Provider>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  activityIndicatorContainer: {
+    position: "absolute",
+    left: Dimensions.get("screen").width / 2 - 10,
+    top: 100
+  }
+})
 
 export default App;

@@ -2,6 +2,7 @@ import Moment from 'moment';
 import {ToDoDB} from 'db_vasern';
 import {
   //refresh
+  REFRESH_START,
   REFRESH_DAILY_LIST,
   REFRESH_TODAY_LIST,
   REFRESH_PAST_LIST,
@@ -10,6 +11,12 @@ import {
 } from '../types';
 //interfaces
 import {SavedToDoI} from 'res';
+
+export const startRefreshing =() => {
+  return {
+    type: REFRESH_START
+  }
+}
 
 //refresh different overview lists
 export const refreshDailyList = () => {
