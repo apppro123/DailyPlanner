@@ -1,7 +1,6 @@
 import React from 'react';
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { OwnView } from "components";
 //library for time/date/...
 import Moment from 'moment';
 //vasern db
@@ -23,14 +22,12 @@ const LATEST_DATE = 'latestDate';
 
 interface StateI {
   latestDate: string,
-  timeoutId?: NodeJS.Timeout,
   loadedData: boolean
 }
 
 class App extends React.Component<{}, StateI> {
   state = {
     latestDate: Moment().format(FORMAT),
-    timeoutId: undefined as undefined | NodeJS.Timeout,
     loadedData: false
   };
 
@@ -42,13 +39,6 @@ class App extends React.Component<{}, StateI> {
       //make calculations
       this.makeCalculations();
     })
-  }
-
-  componentWillUnmount() {
-    const { timeoutId } = this.state;
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
   }
 
   /* look if date changed and refresh ToDos if necessary */
@@ -67,10 +57,6 @@ class App extends React.Component<{}, StateI> {
           //update date in AsyncStorage and state
           const newLatestDate = Moment().format(FORMAT);
           await AsyncStorage.setItem(LATEST_DATE, newLatestDate);
-          //get milliseconds from now to end of day
-          let diffToDayEnd = Moment().endOf("day").diff(Moment());
-          //set timer to call function to refresh at end of day
-          this.state.timeoutId = setTimeout(this.changeToDosNewDay, diffToDayEnd);
 
           //change all done of daily events to undone
           let toDos = ToDoDB.data() as SavedToDoI[];
@@ -85,10 +71,6 @@ class App extends React.Component<{}, StateI> {
           /*
           date has not changed
           */
-          //get milliseconds from now to end of day
-          let diffToDayEnd = Moment().endOf("day").diff(Moment());
-          //set timer to call function to refresh at end of day
-          this.state.timeoutId = setTimeout(this.changeToDosNewDay, diffToDayEnd);
           //get and set to-dos
           store.dispatch(refreshAllLists());
         }
@@ -98,43 +80,49 @@ class App extends React.Component<{}, StateI> {
         */
         const newLatestDate = Moment().format(FORMAT);
         await AsyncStorage.setItem(LATEST_DATE, newLatestDate);
-        //get milliseconds from now to end of day
-        let diffToDayEnd = Moment().endOf("day").diff(Moment());
-        // set timer to call function to refresh at end of day
-        this.state.timeoutId = setTimeout(this.changeToDosNewDay, diffToDayEnd);
       }
     } catch (error) {
       alert('Sorry, an error occured!');
     }
   };
 
-  changeToDosNewDay = async () => {
-    //update date in AsyncStorage and state
-    const newLatestDate = Moment().format(FORMAT);
-    await AsyncStorage.setItem(LATEST_DATE, newLatestDate);
-    //get milliseconds from now to end of day
-    let diffToDayEnd = Moment().endOf("day").diff(Moment());
-    //set timer to call function to refresh at end of day
-    this.state.timeoutId = setTimeout(this.changeToDosNewDay, diffToDayEnd);
+  //have to build a button to refresh views and date
+  refreshAndCheckDate = async () => {
+    let latestDate = await AsyncStorage.getItem(LATEST_DATE);
+    //check date
+    if (!Moment(latestDate, FORMAT).isSame(Moment(), 'day')) {
+      /* 
+      date has changed
+       */
+      //update date in AsyncStorage and state
+      const newLatestDate = Moment().format(FORMAT);
+      await AsyncStorage.setItem(LATEST_DATE, newLatestDate);
 
-    //change all done of daily events to undone
-    let toDos = ToDoDB.data() as SavedToDoI[];
-    for (const toDo of toDos) {
-      if (toDo.recurrence_id && toDo.done === true) {
-        await ToDoDB.update(toDo.id, { done: false })
+      //change all done of daily events to undone
+      let toDos = ToDoDB.data() as SavedToDoI[];
+      for (const toDo of toDos) {
+        if (toDo.recurrence_id && toDo.done === true) {
+          await ToDoDB.update(toDo.id, { done: false })
+        }
       }
+      //refresh views
+      store.dispatch(refreshAllLists());
+    } else {
+      /*
+      date has not changed
+      */
+      //get and set to-dos
+      store.dispatch(refreshAllLists());
     }
-    //refresh views
-    store.dispatch(refreshAllLists());
   }
 
   render() {
     return (
       <Provider store={store}>
         {store.getState().toDos.refreshing &&
-          <OwnView style={styles.activityIndicatorContainer}>
+          <View style={styles.activityIndicatorContainer}>
             <ActivityIndicator />
-          </OwnView>}
+          </View>}
         {this.state.loadedData && <Main />}
       </Provider>
     );

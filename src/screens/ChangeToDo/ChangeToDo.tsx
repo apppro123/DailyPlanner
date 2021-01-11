@@ -180,13 +180,13 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
       //if old recurrence was not set
       if (daily) {
         //now it has recurence
-        changedRecurrence = { recurrenceRule: "daily" }
+        const newRecurrence = await RecurrenceDB.insert({ recurrenceRule: "daily", currentStreak: 0, bestStreak: 0 });
+        changedRecurrence = newRecurrence[0];
       }
     } else {
       //recurrence was set
       if (!daily) {
         //reccurrence is not set anymore
-
         changedRecurrence = undefined;
       }
       /* else{
