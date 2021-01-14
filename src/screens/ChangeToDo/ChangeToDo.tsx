@@ -187,7 +187,7 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
       //recurrence was set
       if (!daily) {
         //reccurrence is not set anymore
-        changedRecurrence = undefined;
+        changedRecurrence = null;
       }
       /* else{
         no more changes than daily to check
