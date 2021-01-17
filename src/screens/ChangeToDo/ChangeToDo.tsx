@@ -175,7 +175,7 @@ class ChangeToDo extends React.Component<PropsI, StateI> {
     const oldToDo = ToDoDB.get(this.props.route.params.toDoId);
     const { name, notes, daily, dateTime, groups } = this.state;
 
-    let changedRecurrence = RecurrenceDB.get(oldToDo.recurrence_id) as undefined | RecurrenceI;
+    let changedRecurrence = RecurrenceDB.get(oldToDo.recurrence_id) as undefined | RecurrenceI | null;
     if (oldToDo.recurrence_id === "") {
       //if old recurrence was not set
       if (daily) {
