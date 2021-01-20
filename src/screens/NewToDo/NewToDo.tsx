@@ -103,13 +103,9 @@ class NewToDo extends React.Component<PropsI, StateI> {
     let daily = false;
     //in the beginning state didn't get changed yet so object is empty
     if (history && routes) {
-      daily = this.checkDaily(history);
+      //check for daily and if not, check if I want to set it in future
+      this.checkHistory(history, routes);
     }
-    //get information from navigatorState: daily 
-    //get navigator name before NewToDo to check if toDo should be daily by default
-    this.setState({
-      daily,
-    });
     //add onFocusListener to refresh day state, and allRemainingGroups
     //because constructor/componentDidMount doesn't get called anymore
     this.unsubscribeFocus = this.props.navigation.addListener(
@@ -151,22 +147,23 @@ class NewToDo extends React.Component<PropsI, StateI> {
     this.props.navigation.setParams({ addDisabled: true });
     //test where the navigator is/was
     const { routes, history } = this.props.Navigators.state;
-    let daily = false;
     //in the beginning state didn't get changed yet so object is empty
     if (history && routes) {
-      daily = this.checkDaily(history);
+      //check for daily and if not, check if I want to set it in future
+      this.checkHistory(history, routes);
     }
     //get all groups
     let allRemainingGroups = [...GroupDB.data()] as GroupI[];
 
     this.setState({
-      daily: daily,
       allRemainingGroups: allRemainingGroups
     });
   };
 
-  checkDaily = history => {
+  checkHistory = (history, routes) => {
+    //console.log(history);
     let daily = false;
+    let dateTime = this.state.dateTime;
     if (history.length > 1) {
       //if history is longer then one (at least two screens were called before)
       let lastNavigatorKey = history[history.length - 1].key;
@@ -183,14 +180,24 @@ class NewToDo extends React.Component<PropsI, StateI> {
         );
         if (secondLastNavigatorName === 'DailyToDosN') {
           daily = true;
+        } else if (secondLastNavigatorName === "ToDosOverviewN") {
+          if(routes[0].state.index === 2){
+            //if I "was" on Future Overview
+            dateTime.add(1, "day");
+          }
         }
       } else {
         if (lastNavigatorName === 'DailyToDosN') {
           daily = true;
+        } else if (lastNavigatorName === "ToDosOverviewN") {
+          if(routes[0].state.index === 2){
+            //if I "was" on Future Overview
+            dateTime.add(1, "day");
+          }
         }
       }
     }
-    return daily;
+    this.setState({ daily, dateTime })
   };
 
   //add new to do
@@ -211,22 +218,22 @@ class NewToDo extends React.Component<PropsI, StateI> {
     }
     await ToDoDB.insert(newToDo);
     const { refreshTodayList, refreshFutureList, refreshDailyList } = this.props;
-      if (daily) {
-        //refresh lists
-        refreshTodayList();
-        refreshFutureList();
-        refreshDailyList();
-      } else if (dateTime.isBefore(Moment().startOf("day"))) {
-        //past to-dos
-        refreshPastList()
-      } else if (dateTime.isAfter(Moment().endOf("day"))) {
-        //future to-dos
-        refreshFutureList();
-      } else {
-        //today to-dos
-        refreshTodayList();
-      }
-      this.props.navigation.navigate("ToDosOverviewN");
+    if (daily) {
+      //refresh lists
+      refreshTodayList();
+      refreshFutureList();
+      refreshDailyList();
+    } else if (dateTime.isBefore(Moment().startOf("day"))) {
+      //past to-dos
+      refreshPastList()
+    } else if (dateTime.isAfter(Moment().endOf("day"))) {
+      //future to-dos
+      refreshFutureList();
+    } else {
+      //today to-dos
+      refreshTodayList();
+    }
+    this.props.navigation.navigate("ToDosOverviewN");
   };
 
   //change inputs
