@@ -196,6 +196,12 @@ class NewToDo extends React.Component<PropsI, StateI> {
           }
         }
       }
+    }else {
+      //still in overview but maybe changed overview from today to future
+      if(routes[0].state.index === 2){
+        //if I "was" on Future Overview
+        dateTime.add(1, "day");
+      }
     }
     this.setState({ daily, dateTime })
   };
