@@ -3,7 +3,6 @@ import { FlatList, FlatListProps, StyleSheet } from "react-native";
 
 //own
 import OwnView from "./View";
-import OwnText from "./Text";
 import OwnButton from "./Button";
 import OwnIcon from "./Icon";
 

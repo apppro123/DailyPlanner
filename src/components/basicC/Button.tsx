@@ -64,7 +64,7 @@ class OwnButton extends React.PureComponent<OwnButtonProps> {
         disabled={disabled}
         onLongPress={onLongPress}
         onPressOut={onPressOut}>
-        {text && (
+        {typeof text === "string" && (
           <ButtonText disabled={disabled} selected={selected} style={textStyle}>
             {text}
           </ButtonText>
