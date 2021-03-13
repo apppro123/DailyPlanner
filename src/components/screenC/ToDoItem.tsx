@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
-    width: Dimensions.get('window').width - 190,
+    maxWidth: Dimensions.get('window').width - 190,
     maxHeight: 50
   },
   buttonsContainer: {

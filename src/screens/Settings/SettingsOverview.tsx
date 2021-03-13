@@ -79,8 +79,9 @@ class SettingsOverview extends React.Component<PropsI, StateI> {
 const styles = StyleSheet.create({
     itemContainer: {
         width: "100%",
-        height: 100,
+        height: 50,
         justifyContent: "center",
+        backgroundColor: "white"
     },
     itemText: {
         fontSize: 20

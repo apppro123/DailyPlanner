@@ -128,8 +128,9 @@ const styles = StyleSheet.create({
     },
     groupName: {
         fontSize: 20,
-        width: Dimensions.get('window').width - 190,
-        maxHeight: 50
+        maxWidth: Dimensions.get('window').width - 50,
+        maxHeight: 50, 
+        
     },
 })
 
