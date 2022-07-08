@@ -1,10 +1,10 @@
 import React from 'react';
 //navigation
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 //screens
 import DailyToDosOverview from './DailyToDosOverview';
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 export const DailyToDosN = () => (
   <Stack.Navigator>

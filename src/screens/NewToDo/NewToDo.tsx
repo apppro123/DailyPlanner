@@ -1,12 +1,17 @@
 import React from 'react';
-import { StyleSheet, Modal, ScrollView } from 'react-native';
-import Moment from "moment";
+import {StyleSheet, Modal, ScrollView} from 'react-native';
+import Moment from 'moment';
 //vasern db
-import { ToDoDB, GroupDB, RecurrenceDB } from "db_vasern";
+import {ToDoDB, GroupDB, RecurrenceDB} from 'db_vasern';
 //redux
-import { connect } from 'react-redux';
-import { refreshDailyList, refreshPastList, refreshTodayList, refreshFutureList } from "../../redux/actions";
-import { RootStateType } from 'src/redux/reducers';
+import {connect} from 'react-redux';
+import {
+  refreshDailyList,
+  refreshPastList,
+  refreshTodayList,
+  refreshFutureList,
+} from '../../redux/actions';
+import {RootStateType} from 'src/redux/reducers';
 //own components
 import {
   OwnView,
@@ -16,64 +21,67 @@ import {
   OwnSwitch,
   OwnIcon,
   TimeDatePicker,
-  SectionIconHeader
+  SectionIconHeader,
 } from 'components';
 //navigation
-import { CompositeNavigationProp, RouteProp } from "@react-navigation/native";
-import { StackNavigationProp } from '@react-navigation/stack';
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { BottomTabNTypes, NewToDoStackNTypes } from "../types";
+import {CompositeNavigationProp, RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/native-stack';
+import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
+import {BottomTabNTypes, NewToDoStackNTypes} from '../types';
 //strings, interfaces, types
-import { Strings, GroupI, SettingStrings, ToDoStrings, RecurrenceI } from 'res';
-const { NAME, NOTES, ADD, DAILY } = Strings;
-const { GROUPS } = SettingStrings;
-const { PLS_SELECT_TIME_AFTER_NOW } = ToDoStrings;
+import {Strings, GroupI, SettingStrings, ToDoStrings, RecurrenceI} from 'res';
+const {NAME, NOTES, ADD, DAILY} = Strings;
+const {GROUPS} = SettingStrings;
+const {PLS_SELECT_TIME_AFTER_NOW} = ToDoStrings;
 //styles
-import { globalStyles } from '../style';
+import {globalStyles} from '../style';
 
 //typescript for redux
 const mapStateToProps = (state: RootStateType) => {
   return {
     ToDos: state.toDos,
-    Navigators: state.navigators
+    Navigators: state.navigators,
   };
 };
 const mapDispatchToProps = {
   refreshTodayList,
   refreshFutureList,
   refreshPastList,
-  refreshDailyList
-}
-type PropsFromRedux = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
+  refreshDailyList,
+};
+type PropsFromRedux = ReturnType<typeof mapStateToProps> &
+  typeof mapDispatchToProps;
 
 //navigation props
-type NewToDoNavigationProps = CompositeNavigationProp<StackNavigationProp<NewToDoStackNTypes, "NewToDo">,
-  BottomTabNavigationProp<BottomTabNTypes>>;
-type NewToDoRouteProps = RouteProp<NewToDoStackNTypes, "NewToDo">
+type NewToDoNavigationProps = CompositeNavigationProp<
+  StackNavigationProp<NewToDoStackNTypes, 'NewToDo'>,
+  BottomTabNavigationProp<BottomTabNTypes>
+>;
+type NewToDoRouteProps = RouteProp<NewToDoStackNTypes, 'NewToDo'>;
 
 interface PropsI extends PropsFromRedux {
-  navigation: NewToDoNavigationProps,
-  route: NewToDoRouteProps
+  navigation: NewToDoNavigationProps;
+  route: NewToDoRouteProps;
 }
 
 interface StateI {
-  name: string,
-  notes: string,
-  daily: boolean,
-  dateTime: Moment.Moment,
-  allRemainingGroups: GroupI[],
-  groups: GroupI[],
+  name: string;
+  notes: string;
+  daily: boolean;
+  dateTime: Moment.Moment;
+  allRemainingGroups: GroupI[];
+  groups: GroupI[];
   //date time picker
-  datePickerVisible: boolean,
-  timePickerVisible: boolean,
+  datePickerVisible: boolean;
+  timePickerVisible: boolean;
   //modal for picking from remaining groups
-  groupsModalVisible: boolean
+  groupsModalVisible: boolean;
 }
 
 //real screen
 class NewToDo extends React.Component<PropsI, StateI> {
-  unsubscribeFocus: any
-  unsubscribeBlur: any
+  unsubscribeFocus: any;
+  unsubscribeBlur: any;
 
   state = {
     name: '',
@@ -84,11 +92,11 @@ class NewToDo extends React.Component<PropsI, StateI> {
     groups: [] as GroupI[],
     datePickerVisible: false,
     timePickerVisible: false,
-    groupsModalVisible: false
+    groupsModalVisible: false,
   };
 
   async componentDidMount() {
-    this.props.navigation.setParams({ addDisabled: true });
+    this.props.navigation.setParams({addDisabled: true});
     this.props.navigation.setOptions({
       headerRight: () => (
         <OwnButton
@@ -99,7 +107,7 @@ class NewToDo extends React.Component<PropsI, StateI> {
       ),
     });
     //test where the navigator is/was
-    const { routes, history } = this.props.Navigators.state;
+    const {routes, history} = this.props.Navigators.state;
     let daily = false;
     //in the beginning state didn't get changed yet so object is empty
     if (history && routes) {
@@ -109,20 +117,20 @@ class NewToDo extends React.Component<PropsI, StateI> {
     //add onFocusListener to refresh day state, and allRemainingGroups
     //because constructor/componentDidMount doesn't get called anymore
     this.unsubscribeFocus = this.props.navigation.addListener(
-      "focus",
+      'focus',
       this.refreshChangedState,
     );
     this.unsubscribeBlur = this.props.navigation.addListener(
-      "blur",
-      this.resetState
+      'blur',
+      this.resetState,
     );
 
     //set all groups
     let allRemainingGroups = [...GroupDB.data()] as GroupI[];
     this.setState({
       daily,
-      allRemainingGroups
-    })
+      allRemainingGroups,
+    });
   }
 
   componentWillUnmount() {
@@ -132,21 +140,21 @@ class NewToDo extends React.Component<PropsI, StateI> {
 
   resetState = () => {
     this.setState({
-      name: "",
-      notes: "",
+      name: '',
+      notes: '',
       dateTime: Moment(),
       groups: [] as GroupI[],
       allRemainingGroups: [] as GroupI[],
       datePickerVisible: false,
       timePickerVisible: false,
-      groupsModalVisible: false
-    })
-  }
+      groupsModalVisible: false,
+    });
+  };
 
   refreshChangedState = async () => {
-    this.props.navigation.setParams({ addDisabled: true });
+    this.props.navigation.setParams({addDisabled: true});
     //test where the navigator is/was
-    const { routes, history } = this.props.Navigators.state;
+    const {routes, history} = this.props.Navigators.state;
     //in the beginning state didn't get changed yet so object is empty
     if (history && routes) {
       //check for daily and if not, check if I want to set it in future
@@ -156,7 +164,7 @@ class NewToDo extends React.Component<PropsI, StateI> {
     let allRemainingGroups = [...GroupDB.data()] as GroupI[];
 
     this.setState({
-      allRemainingGroups: allRemainingGroups
+      allRemainingGroups: allRemainingGroups,
     });
   };
 
@@ -180,98 +188,102 @@ class NewToDo extends React.Component<PropsI, StateI> {
         );
         if (secondLastNavigatorName === 'DailyToDosN') {
           daily = true;
-        } else if (secondLastNavigatorName === "ToDosOverviewN") {
-          if(routes[0].state.index === 2){
+        } else if (secondLastNavigatorName === 'ToDosOverviewN') {
+          if (routes[0].state.index === 2) {
             //if I "was" on Future Overview
-            dateTime.add(1, "day");
+            dateTime.add(1, 'day');
           }
         }
       } else {
         if (lastNavigatorName === 'DailyToDosN') {
           daily = true;
-        } else if (lastNavigatorName === "ToDosOverviewN") {
-          if(routes[0].state.index === 2){
+        } else if (lastNavigatorName === 'ToDosOverviewN') {
+          if (routes[0].state.index === 2) {
             //if I "was" on Future Overview
-            dateTime.add(1, "day");
+            dateTime.add(1, 'day');
           }
         }
       }
-    }else {
+    } else {
       //still in overview but maybe changed overview from today to future
-      if(routes[0].state.index === 2){
+      if (routes[0].state.index === 2) {
         //if I "was" on Future Overview
-        dateTime.add(1, "day");
+        dateTime.add(1, 'day');
       }
     }
-    this.setState({ daily, dateTime })
+    this.setState({daily, dateTime});
   };
 
   //add new to do
   addToDo = async () => {
-    const { name, notes, daily, dateTime, groups } = this.state;
+    const {name, notes, daily, dateTime, groups} = this.state;
     let newToDo = {
       name: name.trim(),
       notes: notes.trim(),
       groups: groups,
       dateTime: dateTime.toDate(),
       done: false,
-      recurrence: undefined as RecurrenceI | undefined
+      recurrence: undefined as RecurrenceI | undefined,
     };
     if (daily) {
-      const newRecurrence = await RecurrenceDB.insert({ recurrenceRule: "daily", currentStreak: 0, bestStreak: 0 });
+      const newRecurrence = await RecurrenceDB.insert({
+        recurrenceRule: 'daily',
+        currentStreak: 0,
+        bestStreak: 0,
+      });
       //[0] because it insert() return an array
       newToDo.recurrence = newRecurrence[0];
     }
     await ToDoDB.insert(newToDo);
-    const { refreshTodayList, refreshFutureList, refreshDailyList } = this.props;
+    const {refreshTodayList, refreshFutureList, refreshDailyList} = this.props;
     if (daily) {
       //refresh lists
       refreshTodayList();
       refreshFutureList();
       refreshDailyList();
-    } else if (dateTime.isBefore(Moment().startOf("day"))) {
+    } else if (dateTime.isBefore(Moment().startOf('day'))) {
       //past to-dos
-      refreshPastList()
-    } else if (dateTime.isAfter(Moment().endOf("day"))) {
+      refreshPastList();
+    } else if (dateTime.isAfter(Moment().endOf('day'))) {
       //future to-dos
       refreshFutureList();
     } else {
       //today to-dos
       refreshTodayList();
     }
-    this.props.navigation.navigate("ToDosOverviewN");
+    this.props.navigation.navigate('ToDosOverviewN');
   };
 
   //change inputs
   changeName = (name: string) => {
     if (name.trim() == '') {
-      this.props.navigation.setParams({ addDisabled: true });
+      this.props.navigation.setParams({addDisabled: true});
     } else if (this.state.name.trim() == '') {
-      this.props.navigation.setParams({ addDisabled: false });
+      this.props.navigation.setParams({addDisabled: false});
     }
-    this.setState({ name });
+    this.setState({name});
   };
-  changeNotes = (notes: string) => this.setState({ notes });
+  changeNotes = (notes: string) => this.setState({notes});
 
   //switch daily
-  switchDaily = (daily: boolean) => this.setState({ daily });
+  switchDaily = (daily: boolean) => this.setState({daily});
 
   //TimeDatePicker functions
-  onDatePress = () => this.setState({ datePickerVisible: true });
+  onDatePress = () => this.setState({datePickerVisible: true});
   onDateConfirm = (datetime: Date) => {
     const momentDatetime = Moment(datetime);
-    if (momentDatetime.isAfter(Moment().startOf("day"))) {
+    if (momentDatetime.isAfter(Moment().startOf('day'))) {
       this.setState({
         dateTime: momentDatetime,
         datePickerVisible: false,
       });
     } else {
-      this.setState({ datePickerVisible: false });
+      this.setState({datePickerVisible: false});
       alert(PLS_SELECT_TIME_AFTER_NOW);
     }
   };
-  onDateCancel = () => this.setState({ datePickerVisible: false });
-  onTimePress = () => this.setState({ timePickerVisible: true });
+  onDateCancel = () => this.setState({datePickerVisible: false});
+  onTimePress = () => this.setState({timePickerVisible: true});
   onTimeConfirm = (timedate: Date) => {
     const momentTimeDate = Moment(timedate);
     if (momentTimeDate.isAfter(Moment())) {
@@ -280,40 +292,42 @@ class NewToDo extends React.Component<PropsI, StateI> {
         timePickerVisible: false,
       });
     } else {
-      this.setState({ timePickerVisible: false });
+      this.setState({timePickerVisible: false});
       alert(PLS_SELECT_TIME_AFTER_NOW);
     }
   };
-  onTimeCancel = () => this.setState({ timePickerVisible: false });
+  onTimeCancel = () => this.setState({timePickerVisible: false});
 
   //adding/showing a group
   onPlusGroupPress = () => {
     if (this.state.allRemainingGroups.length > 0) {
       this.setState({
-        groupsModalVisible: true
-      })
+        groupsModalVisible: true,
+      });
     } else {
-      alert("No Groups left.")
+      alert('No Groups left.');
     }
-  }
+  };
 
   closeGroupModal = () => {
     this.setState({
-      groupsModalVisible: false
-    })
-  }
+      groupsModalVisible: false,
+    });
+  };
 
   addGroup = (group: GroupI) => {
-    let { allRemainingGroups, groups } = this.state;
+    let {allRemainingGroups, groups} = this.state;
     //add group to selected groups for to-do
-    groups.push(group)
+    groups.push(group);
     //remove groupd from remaining groups
     //index of group in remaining groups which should get removed
-    const remainingGroupIndex = allRemainingGroups.findIndex((remainingGroup: GroupI) => remainingGroup.id === group.id);
+    const remainingGroupIndex = allRemainingGroups.findIndex(
+      (remainingGroup: GroupI) => remainingGroup.id === group.id,
+    );
     allRemainingGroups.splice(remainingGroupIndex, 1);
 
-    this.setState({ allRemainingGroups, groups, groupsModalVisible: false });
-  }
+    this.setState({allRemainingGroups, groups, groupsModalVisible: false});
+  };
 
   renderAddedGroup = (group: GroupI, index: number) => {
     return (
@@ -323,23 +337,34 @@ class NewToDo extends React.Component<PropsI, StateI> {
           <OwnIcon iconSet="MaterialCommunity" name="trash-can" size={35} />
         </OwnButton>
       </OwnView>
-    )
-  }
+    );
+  };
 
   removeAddedGroup = (group: GroupI) => {
-    let { allRemainingGroups, groups } = this.state;
+    let {allRemainingGroups, groups} = this.state;
     //add groups to remaining groups
     allRemainingGroups.push(group);
     //remove group from addedGroups
-    const addedGroupIndex = groups.findIndex((addedGroup: GroupI) => addedGroup.id === group.id);
+    const addedGroupIndex = groups.findIndex(
+      (addedGroup: GroupI) => addedGroup.id === group.id,
+    );
     groups.splice(addedGroupIndex, 1);
 
-    this.setState({ allRemainingGroups, groups });
-  }
+    this.setState({allRemainingGroups, groups});
+  };
 
   render() {
-    const { name, notes, daily, dateTime, datePickerVisible,
-      timePickerVisible, groups, allRemainingGroups, groupsModalVisible } = this.state;
+    const {
+      name,
+      notes,
+      daily,
+      dateTime,
+      datePickerVisible,
+      timePickerVisible,
+      groups,
+      allRemainingGroups,
+      groupsModalVisible,
+    } = this.state;
     return (
       <OwnView style={globalStyles.screenContainer}>
         <ScrollView>
@@ -375,25 +400,47 @@ class NewToDo extends React.Component<PropsI, StateI> {
           <TimeDatePicker
             allDay={true}
             value={dateTime.toDate()}
-            dateFunctions={{ onPress: this.onDatePress, onCancel: this.onDateCancel, onConfirm: this.onDateConfirm }}
-            timeFunctions={{ onPress: this.onTimePress, onConfirm: this.onTimeConfirm, onCancel: this.onTimeCancel }}
+            dateFunctions={{
+              onPress: this.onDatePress,
+              onCancel: this.onDateCancel,
+              onConfirm: this.onDateConfirm,
+            }}
+            timeFunctions={{
+              onPress: this.onTimePress,
+              onConfirm: this.onTimeConfirm,
+              onCancel: this.onTimeCancel,
+            }}
             dateVisible={datePickerVisible}
-            timeVisible={timePickerVisible} />
+            timeVisible={timePickerVisible}
+          />
           <OwnView style={globalStyles.groupSectionContainer}>
-            <SectionIconHeader title={GROUPS} onIconPress={this.onPlusGroupPress} />
-            {groups.length > 0 &&
-              <OwnView style={globalStyles.groupHeaderUnderline} />}
-            {groups.map((group: GroupI, index: number) => this.renderAddedGroup(group, index))}
+            <SectionIconHeader
+              title={GROUPS}
+              onIconPress={this.onPlusGroupPress}
+            />
+            {groups.length > 0 && (
+              <OwnView style={globalStyles.groupHeaderUnderline} />
+            )}
+            {groups.map((group: GroupI, index: number) =>
+              this.renderAddedGroup(group, index),
+            )}
           </OwnView>
           <Modal visible={groupsModalVisible} transparent={true}>
             <OwnView style={styles.groupsModalContainer}>
               <OwnView style={styles.groupsModalInnerContainer}>
-                <OwnButton style={styles.cancelModalButton} onPress={this.closeGroupModal}>
+                <OwnButton
+                  style={styles.cancelModalButton}
+                  onPress={this.closeGroupModal}>
                   <OwnIcon iconSet="MaterialCommunity" name="close" size={35} />
                 </OwnButton>
-                {
-                  allRemainingGroups.map((group, index) => <OwnButton key={index} text={group.name} textStyle={styles.groupsModalName} onPress={() => this.addGroup(group)} />)
-                }
+                {allRemainingGroups.map((group, index) => (
+                  <OwnButton
+                    key={index}
+                    text={group.name}
+                    textStyle={styles.groupsModalName}
+                    onPress={() => this.addGroup(group)}
+                  />
+                ))}
               </OwnView>
             </OwnView>
           </Modal>
@@ -414,7 +461,7 @@ const styles = StyleSheet.create({
   },
   switchContainer: {
     flexDirection: 'row',
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
     width: '100%',
     borderWidth: 1,
     borderRadius: 10,
@@ -424,40 +471,40 @@ const styles = StyleSheet.create({
     paddingRight: 30,
   },
   switch: {
-    transform: [{ scaleX: 1.3 }, { scaleY: 1.3 }],
+    transform: [{scaleX: 1.3}, {scaleY: 1.3}],
   },
   //groups
   groupContainer: {
-    width: "100%",
-    flexDirection: "row",
+    width: '100%',
+    flexDirection: 'row',
     padding: 5,
-    justifyContent: "space-between",
-    alignItems: "center"
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   groupName: {
-    fontSize: 25
+    fontSize: 25,
   },
   //modal for remaining groups
   groupsModalContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "transparent"
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
   },
   groupsModalInnerContainer: {
     padding: 100,
     borderWidth: 1,
-    borderRadius: 10
+    borderRadius: 10,
   },
   groupsModalName: {
     fontSize: 25,
-    padding: 3
+    padding: 3,
   },
   cancelModalButton: {
     position: 'absolute',
     top: 10,
     right: 10,
-  }
+  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(NewToDo);

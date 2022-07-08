@@ -1,8 +1,8 @@
 import React from 'react';
 //react navigation stack
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 //types
-import {NewToDoStackNTypes} from "../types";
+import {NewToDoStackNTypes} from '../types';
 //own components
 import {OwnButton, OwnIcon} from 'components';
 //strings
@@ -10,10 +10,10 @@ import {Strings} from 'res';
 const {NEW_TODO} = Strings;
 
 //screen
-import NewToDo from "./NewToDo";
+import NewToDo from './NewToDo';
 
 //stack navigator
-const Stack = createStackNavigator<NewToDoStackNTypes>();
+const Stack = createNativeStackNavigator<NewToDoStackNTypes>();
 export function NewToDoStackN() {
   return (
     <Stack.Navigator>
@@ -36,4 +36,3 @@ export function NewToDoStackN() {
     </Stack.Navigator>
   );
 }
-
